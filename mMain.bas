@@ -37,7 +37,7 @@ Private Const InnerRadius As Double = 159
 
 Private Const PI2 As Double = 6.28318530717959
 Private Const PI  As Double = 3.14159265358979
-Private Const PIh As Double = 1.5707963267949
+Public Const PIh  As Double = 1.5707963267949
 
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
@@ -50,7 +50,7 @@ Public NSPINS     As Long
 Public TURBO      As Boolean
 
 
-Public Sub SETUP()
+Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
 
     Set WheelSRF = Cairo.ImageList.AddImage("WHEEL", App.Path & "\RouletteWheel.png")
@@ -75,7 +75,7 @@ Public Sub SETUP()
     SLOTn(24) = 26: SLOTn(25) = 16: SLOTn(26) = 4: SLOTn(27) = 23: SLOTn(28) = 35: SLOTn(29) = 14: SLOTn(30) = 2: SLOTn(31) = 0
     SLOTn(32) = 20: SLOTn(33) = 9: SLOTn(34) = 28: SLOTn(35) = 32: SLOTn(36) = 11: SLOTn(37) = 30
 
-    LAUNCH
+    If andLAUNCH Then LAUNCH
 
 End Sub
 
@@ -85,8 +85,8 @@ Public Sub LAUNCH()
     WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
 
     BallX = -0
-    BallY = -(OuterRadius - R) + 4 + Rnd * 5
-    BallVX = Rnd * 5
+    BallY = -(OuterRadius - R) + 4 + Rnd * 6
+    BallVX = Rnd * 8
     BallVY = 0
 
     While WheelANG > PI2: WheelANG = WheelANG - PI2: Wend
@@ -96,17 +96,35 @@ Public Sub LAUNCH()
     WHEELLOOP
 
 End Sub
-Private Function Slot2Number(Slot As Long, Optional ColorToo As Boolean = True) As String
+Public Function Slot2Number(Slot As Long, Optional JustNumber As Boolean = False) As String
     Dim Result&
     Result = SLOTn(Slot)
     If Result < 0 Then Slot2Number = "00" Else: Slot2Number = CStr(Result)
     If Len(Slot2Number) = 1 Then Slot2Number = " " & Slot2Number
-    If ColorToo Then
+
+    If Not (JustNumber) Then
         If Result > 0 Then
-            Slot2Number = Slot2Number & IIf((Slot Mod 2), " Red", " Black")
+            Slot2Number = Slot2Number & IIf((Slot Mod 2), " Rouge", " Noir ")
+            Slot2Number = Slot2Number & IIf((Val(Result) Mod 2), " Impair", " Pair  ")
+            Slot2Number = Slot2Number & IIf((Val(Result) <= 18), " Manque", " Passe ")
+        Else
+            Slot2Number = Slot2Number & Space(20)
         End If
     End If
 End Function
+
+Public Function Number2Slot(N As Long) As Long
+    Dim I         As Long
+    For I = 0 To 37
+        If SLOTn(I) = N Then
+            Number2Slot = I
+            Exit For
+        End If
+    Next
+
+
+End Function
+
 
 Private Sub ShowResult()
     Dim N         As Long
@@ -145,32 +163,10 @@ End Sub
 
 
 Public Sub WHEELLOOP()
-    '    TickAnim = GetTickCount
-    '    TickDRAW = GetTickCount
-    '    Do
-    '        CurrTICK = GetTickCount
-    '
-    '        If CurrTICK - TickAnim >= 8 Then    ' 1000 / 8 = 125 FPS    Computed
-    '            TickAnim = GetTickCount
-    '            SIMULATE
-    '            If WheelANGSpeed < 0 Then
-    '                ShowResult
-    '                Exit Do
-    '            End If
-    '        End If
-    '
-    '        If CurrTICK - TickDRAW >= 40 Then    ' 1000 / 40 = 25 FPS    Draw
-    '            TickDRAW = GetTickCount
-    '            DRAWALL
-    '            DoEvents
-    '        End If
-    '
-    '    Loop While True
-
 
     If TURBO Then
-        ComputedFPS = 400
-        DrawFPS = 8
+        ComputedFPS = 500          '400
+        DrawFPS = 6                '8
     Else
         ComputedFPS = 100
         DrawFPS = 30               '100
@@ -190,7 +186,6 @@ Public Sub WHEELLOOP()
         tCompute = TEMPO.Add(ComputedFPS)
         t1sec = TEMPO.Add(1)
     End If
-
 
 
     Do
@@ -368,7 +363,6 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
     'BALLA = Atan2(BallX, BallY)
 
 
-    '    For A = -0.07 To PI2 Step angSTeP
     For A = -0.07 To PI2 Step angSTeP
 
         CA = Cos(A + WheelANG)
@@ -399,8 +393,6 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
             Penetration = ((R + 3) - rDIST)
             BallX = BallX + rNX * Penetration * 2
             BallY = BallY + rNY * Penetration * 2
-
-
 
             '1 Step forward
             BallX = BallX + BallVX
@@ -471,8 +463,8 @@ Private Sub UPDATESTAT()
             End If
         Next
 
-        'fMain.Text2 = fMain.Text2 & Slot2Number(High, False) & "    " & STATFreq(High) & "" & vbCrLf
-        fMain.Text2 = fMain.Text2 & Slot2Number(High, False) & "  " & Format$(100 * STATFreq(High) / NSPINS, "00.000") & "%  (" & STATFreq(High) & ")" & vbCrLf
+        'fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "    " & STATFreq(High) & "" & vbCrLf
+        fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "  " & Format$(100 * STATFreq(High) / NSPINS, "00.000") & "%  (" & STATFreq(High) & ")" & vbCrLf
         STATFreq(High) = -STATFreq(High) - 1
     Next
     'RESTORE
@@ -495,7 +487,7 @@ Private Sub UPDATESTAT()
             End If
         Next
 
-        fMain.Text3 = fMain.Text3 & Slot2Number(High, False) & "  " & Format$(100 * STATRita(High) / MAXALL, "00.000") & "%  (" & STATRita(High) & ")" & vbCrLf
+        fMain.Text3 = fMain.Text3 & Slot2Number(High, True) & "  " & Format$(100 * STATRita(High) / MAXALL, "00.000") & "%  (" & STATRita(High) & ")" & vbCrLf
         STATRita(High) = -STATRita(High) - 1
     Next
 
