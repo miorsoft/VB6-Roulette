@@ -85,7 +85,7 @@ Public Sub LAUNCH()
     WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
 
     BallX = -0
-    BallY = -(OuterRadius - R) + 4 + Rnd * 6
+    BallY = -(OuterRadius - R) + 4 + Rnd * 14
     BallVX = Rnd * 8
     BallVY = 0
 
@@ -121,8 +121,6 @@ Public Function Number2Slot(N As Long) As Long
             Exit For
         End If
     Next
-
-
 End Function
 
 
@@ -152,7 +150,7 @@ Private Sub ShowResult()
     fMain.Text1 = S & vbCrLf & fMain.Text1
 
     ' Test Text Length
-    If Len(fMain.Text1) > 600 Then fMain.Text1 = Left$(fMain.Text1, 600)
+    If Len(fMain.Text1) > 1600 Then fMain.Text1 = Left$(fMain.Text1, 1600)
 
 
     UPDATESTAT
@@ -172,20 +170,19 @@ Public Sub WHEELLOOP()
         DrawFPS = 30               '100
     End If
 
-
-    If TEMPO Is Nothing Then       '
-        Set TEMPO = New clsTick
-        tDRAW = TEMPO.Add(DrawFPS)
-        tCompute = TEMPO.Add(ComputedFPS)
-        t1sec = TEMPO.Add(1)
-    Else
-        TEMPO.Remove tDRAW
-        TEMPO.Remove tCompute
-        TEMPO.Remove t1sec
-        tDRAW = TEMPO.Add(DrawFPS)
-        tCompute = TEMPO.Add(ComputedFPS)
-        t1sec = TEMPO.Add(1)
-    End If
+    '    If TEMPO Is Nothing Then       '
+    Set TEMPO = New clsTick
+    tDRAW = TEMPO.Add(DrawFPS)
+    tCompute = TEMPO.Add(ComputedFPS)
+    t1sec = TEMPO.Add(1)
+    '    Else
+    '        TEMPO.Remove tDRAW
+    '        TEMPO.Remove tCompute
+    '        TEMPO.Remove t1sec
+    '        tDRAW = TEMPO.Add(DrawFPS)
+    '        tCompute = TEMPO.Add(ComputedFPS)
+    '        t1sec = TEMPO.Add(1)
+    '    End If
 
 
     Do
@@ -206,7 +203,7 @@ Public Sub WHEELLOOP()
                 fMain.Caption = "  Computed FPS:" & TEMPO.Count(tCompute) & " DrawnFPS:" & TEMPO.Count(tDRAW)
                 TEMPO.ResetCount (tCompute)
                 TEMPO.ResetCount (tDRAW)
-                TEMPO.ResetCount (t1sec)
+                'TEMPO.ResetCount (t1sec)
         End Select
 
     Loop While True
@@ -330,11 +327,11 @@ Public Sub SIMULATE()
     End If
 
     '
-    BallVX = BallVX - DY * DistFromCenter * 0.003 * WheelANGSpeed    ' Force induced by spinning wheel
+    BallVX = BallVX - DY * DistFromCenter * 0.003 * WheelANGSpeed    ' Force induced by spinning wheel Floor
     BallVY = BallVY + DX * DistFromCenter * 0.003 * WheelANGSpeed
 
-    BallVX = BallVX - DX * 0.15    '0.25    'Toward Center (Like CONE)
-    BallVY = BallVY - DY * 0.15
+    BallVX = BallVX - DX * 0.11    '0.15    '0.25    'Toward Center (Like CONE) [Wheel Slope]
+    BallVY = BallVY - DY * 0.11    '0.15
 
     BallVX = BallVX * 0.997        '.995        'GLOABAL Friction
     BallVY = BallVY * 0.997
@@ -406,13 +403,13 @@ End Sub
 
 Private Sub COLLISIONResponse(VX1, VY1, VX2, VY2, nDX, nDY)
 
-    Const Elasticity As Double = 0.7
-    Const Friction As Double = 0.9
+    Const Elasticity As Double = 0.9    '0.7
+    Const Friction As Double = 0.9    '0.9
 
     Const MassI   As Double = 1
-    Const MassJ   As Double = 99
-    Const InvMassSum As Double = 0.01
-    Const MassDiff As Double = -98
+    Const MassJ   As Double = 999
+    Const InvMassSum As Double = 0.001
+    Const MassDiff As Double = -998
 
     Dim parIx#, parIy#             'Parallel VEL for V1
     Dim perpIx#, perpIy#           'Perpendicular VEL for V1
