@@ -179,15 +179,15 @@ Public Sub WHEELLOOP()
 
     If TEMPO Is Nothing Then       '
         Set TEMPO = New clsTick
-        tDRAW = TEMPO.Add(DrawFPS)    '0
-        tCompute = TEMPO.Add(ComputedFPS)    '(600)
+        tDRAW = TEMPO.Add(DrawFPS)
+        tCompute = TEMPO.Add(ComputedFPS)
         t1sec = TEMPO.Add(1)
     Else
         TEMPO.Remove tDRAW
         TEMPO.Remove tCompute
         TEMPO.Remove t1sec
-        tDRAW = TEMPO.Add(DrawFPS)    '0
-        tCompute = TEMPO.Add(ComputedFPS)    '(600)
+        tDRAW = TEMPO.Add(DrawFPS)
+        tCompute = TEMPO.Add(ComputedFPS)
         t1sec = TEMPO.Add(1)
     End If
 
@@ -201,7 +201,6 @@ Public Sub WHEELLOOP()
 
                 SIMULATE
                 If WheelANGSpeed < 0 Then
-                    ShowResult
                     Exit Do
                 End If
             Case tDRAW
@@ -212,11 +211,12 @@ Public Sub WHEELLOOP()
                 fMain.Caption = "  Computed FPS:" & TEMPO.Count(tCompute) & " DrawnFPS:" & TEMPO.Count(tDRAW)
                 TEMPO.ResetCount (tCompute)
                 TEMPO.ResetCount (tDRAW)
-
+                TEMPO.ResetCount (t1sec)
         End Select
 
     Loop While True
 
+    ShowResult
 
 End Sub
 
