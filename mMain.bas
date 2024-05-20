@@ -134,7 +134,7 @@ Private Sub ShowResult()
     fMain.Text1 = S & vbCrLf & fMain.Text1
 
     ' Test Text Length
-    If Len(fMain.Text1) > 500 Then fMain.Text1 = Left$(fMain.Text1, 500)
+    If Len(fMain.Text1) > 600 Then fMain.Text1 = Left$(fMain.Text1, 600)
 
 
     UPDATESTAT
