@@ -49,6 +49,8 @@ Public NSPINS     As Long
 
 Public TURBO      As Boolean
 
+Private BallSTOPCount As Long
+
 
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
@@ -184,6 +186,7 @@ Public Sub WHEELLOOP()
     '        t1sec = TEMPO.Add(1)
     '    End If
 
+    BallSTOPCount = 0
 
     Do
 
@@ -192,9 +195,13 @@ Public Sub WHEELLOOP()
             Case tCompute
 
                 SIMULATE
+                
                 If WheelANGSpeed < 0 Then
-                    Exit Do
+                    '                    Exit Do
+                    WheelANGSpeed = 0
                 End If
+                If BallSTOPCount > 50 Then Exit Do
+            
             Case tDRAW
                 DRAWALL
                 DoEvents
@@ -300,6 +307,7 @@ Public Sub SIMULATE()
     WheelANG = WheelANG + WheelANGSpeed
 
     WheelANGSpeed = WheelANGSpeed * 0.997 - 0.00001
+    If WheelANGSpeed > 0 Then WheelANGSpeed = WheelANGSpeed - 0.00001
 
     DistFromCenter = Sqr(BallX * BallX + BallY * BallY)
     invDFC = 1# / DistFromCenter
@@ -338,6 +346,9 @@ Public Sub SIMULATE()
 
     BallX = BallX + BallVX         'Update Position
     BallY = BallY + BallVY
+
+    If (BallVX * BallVX + BallVY * BallVY) < 0.01 Then BallSTOPCount = BallSTOPCount + 1 Else: BallSTOPCount = 0
+
 
 End Sub
 
