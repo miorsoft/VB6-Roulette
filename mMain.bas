@@ -245,7 +245,8 @@ Public Sub DRAWALL()
     CC.SetSourceColor 0
     CC.Stroke
 
-    fMain.Picture = SRF.Picture
+    '    fMain.Picture = SRF.Picture
+    SRF.DrawToDC fMain.hDC
 
 End Sub
 
@@ -502,6 +503,13 @@ Private Sub UPDATESTAT()
     'RESTORE
     For I = 0 To 37
         STATRita(I) = -STATRita(I) - 1
+    Next
+
+
+    fMain.Cls
+    For I = 0 To 37
+        fMain.Line (I * 12 + 12, fMain.ScaleHeight - 2)-(I * 12 + 12, -2 + fMain.ScaleHeight - 2300 * STATFreq(I) / NSPINS), vbBlack
+        fMain.Line (I * 12 + 15, fMain.ScaleHeight - 2)-(I * 12 + 15, -2 + fMain.ScaleHeight - 120 * STATRita(I) / MAXALL), vbGreen
     Next
 
 
