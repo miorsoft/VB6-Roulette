@@ -456,6 +456,7 @@ Private Sub UPDATESTAT()
     Dim J         As Long
     Dim High      As Long
     Dim Max       As Long
+    Dim MAXALL    As Long
 
     fMain.Text2 = "Rounds:" & NSPINS & "  Frequencies   " & Format$(100 / 38, "00.00") & vbCrLf & vbCrLf
     fMain.Text3 = "Late Numbers:" & vbCrLf & vbCrLf & vbCrLf
@@ -480,7 +481,9 @@ Private Sub UPDATESTAT()
 
 
 
-
+    For I = 0 To 37
+        If STATRita(I) > MAXALL Then MAXALL = STATRita(I)
+    Next
 
     For J = 1 To 38
         Max = -1000000000
@@ -491,13 +494,17 @@ Private Sub UPDATESTAT()
             End If
         Next
 
-        fMain.Text3 = fMain.Text3 & Slot2Number(High, False) & "  " & Format$(100 * STATRita(High) / NSPINS, "00.000") & "%  (" & STATRita(High) & ")" & vbCrLf
+        fMain.Text3 = fMain.Text3 & Slot2Number(High, False) & "  " & Format$(100 * STATRita(High) / MAXALL, "00.000") & "%  (" & STATRita(High) & ")" & vbCrLf
         STATRita(High) = -STATRita(High) - 1
     Next
+
+
     'RESTORE
     For I = 0 To 37
         STATRita(I) = -STATRita(I) - 1
     Next
+
+
 
 
 End Sub
