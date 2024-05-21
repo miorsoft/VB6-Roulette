@@ -36,7 +36,7 @@ Private Const QS_ALLEVENTS = (QS_INPUT Or QS_POSTMESSAGE Or QS_TIMER Or QS_PAINT
 
 ' tick data
 Private Type TICKS
-    ID            As Long          ' identifier ID
+    id            As Long          ' identifier ID
     Count         As Long          ' number of ticks done
     Ending        As Currency      ' the next ending tick
     FREQ          As Currency      ' tick frequency
@@ -59,10 +59,10 @@ Private Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency A
 ' to prevent 100% processor usage
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' add a new timed event
-Public Function Add(ByVal FramesPerSecond As Double, Optional ByVal ID As Long = 0, Optional ByVal NoFrameSkip As Boolean = False) As Long
+Public Function Add(ByVal FramesPerSecond As Double, Optional ByVal id As Long = 0, Optional ByVal NoFrameSkip As Boolean = False) As Long
     Dim blnNoArrayInit As Boolean, lngNewIndex As Long
     ' check for invalid input values
-    If ID < 0 Then Add = -1: Exit Function
+    If id < 0 Then Add = -1: Exit Function
     If FramesPerSecond <= 0 Then Add = -1: Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
@@ -74,17 +74,17 @@ Public Function Add(ByVal FramesPerSecond As Double, Optional ByVal ID As Long =
     ReDim Preserve tick(lngNewIndex)
     ' set settings
     With tick(lngNewIndex)
-        .ID = ID
+        .id = id
         .FREQ = CCur(CDbl(m_curFreq) / FramesPerSecond)
     End With
     ' return the new index
     Add = lngNewIndex
 End Function
 ' how many times a timed event has occurred?
-Public Function Count(ByVal Index As Long) As Long
+Public Function Count(ByVal index As Long) As Long
     Dim blnNoArrayInit As Boolean
     ' invalid index?
-    If Index < 0 Then Exit Function
+    If index < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -92,15 +92,15 @@ Public Function Count(ByVal Index As Long) As Long
     ' no array, nothing to remove
     If blnNoArrayInit Then Exit Function
     ' out of upper bound?
-    If Index > UBound(tick) Then Exit Function
+    If index > UBound(tick) Then Exit Function
     ' finally... return the count
-    Count = tick(Index).Count
+    Count = tick(index).Count
 End Function
 ' how many times timed events of certain identifier have occurred?
-Public Function CountByID(ByVal ID As Long) As Long
+Public Function CountByID(ByVal id As Long) As Long
     Dim blnNoArrayInit As Boolean, lngA As Long, lngCount As Long
     ' invalid ID?
-    If ID < 0 Then Exit Function
+    If id < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -109,7 +109,7 @@ Public Function CountByID(ByVal ID As Long) As Long
     If blnNoArrayInit Then Exit Function
     ' count totals by ID
     For lngA = 0 To UBound(tick)
-        If tick(lngA).ID = ID Then lngCount = lngCount + tick(lngA).Count
+        If tick(lngA).id = id Then lngCount = lngCount + tick(lngA).Count
     Next lngA
     ' finally... return the count
     CountByID = lngCount
@@ -126,9 +126,9 @@ Public Property Let LateIndicator(ByVal NewValue As Currency)
     m_curLateTick = -(m_curFreq / m_curLateTicks)
 End Property
 ' remove a timed event
-Public Function Remove(ByVal Index As Long) As Boolean
+Public Function Remove(ByVal index As Long) As Boolean
     Dim blnNoArrayInit As Boolean, lngA As Long, lngTicks As Long
-    If Index < 0 Then Exit Function
+    If index < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -137,12 +137,12 @@ Public Function Remove(ByVal Index As Long) As Boolean
     If blnNoArrayInit Then Exit Function
     ' out of upper bound?
     lngTicks = UBound(tick) - 1
-    If (Index - 1) > lngTicks Then Exit Function
+    If (index - 1) > lngTicks Then Exit Function
     ' finally, remove
     If lngTicks >= 0 Then
         ' remove the current index by overwriting
-        For lngA = Index To lngTicks
-            tick(Index) = tick(Index + 1)
+        For lngA = index To lngTicks
+            tick(index) = tick(index + 1)
         Next lngA
         ' remove last item
         ReDim Preserve tick(lngTicks)
@@ -154,9 +154,9 @@ Public Function Remove(ByVal Index As Long) As Boolean
     Remove = True
 End Function
 ' remove timed events of certain identifier
-Public Function RemoveByID(ByVal ID As Long) As Long
+Public Function RemoveByID(ByVal id As Long) As Long
     Dim blnNoArrayInit As Boolean, lngA As Long, lngB As Long, lngCount As Long
-    If ID < 0 Then Exit Function
+    If id < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -166,7 +166,7 @@ Public Function RemoveByID(ByVal ID As Long) As Long
     ' loop through all items
     For lngA = UBound(tick) To 0 Step -1
         ' remove ones with a matching ID
-        If tick(lngA).ID = ID Then
+        If tick(lngA).id = id Then
             If UBound(tick) > 0 Then
                 ' remove current item
                 For lngB = lngA To UBound(tick) - 1
@@ -189,10 +189,10 @@ Public Function RemoveByID(ByVal ID As Long) As Long
     RemoveByID = lngCount
 End Function
 ' reset event amount counter
-Public Function ResetCount(ByVal Index As Long) As Boolean
+Public Function ResetCount(ByVal index As Long) As Boolean
     Dim blnNoArrayInit As Boolean
     ' invalid index?
-    If Index < 0 Then Exit Function
+    If index < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -200,16 +200,16 @@ Public Function ResetCount(ByVal Index As Long) As Boolean
     ' no array, nothing to remove
     If blnNoArrayInit Then Exit Function
     ' out of upper bound?
-    If Index > UBound(tick) Then Exit Function
+    If index > UBound(tick) Then Exit Function
     ' finally... reset the count
-    tick(Index).Count = 0
+    tick(index).Count = 0
     ResetCount = True
 End Function
 ' reset event amount counter of certain identifier
-Public Function ResetCountByID(ByVal ID As Long) As Long
+Public Function ResetCountByID(ByVal id As Long) As Long
     Dim blnNoArrayInit As Boolean, lngA As Long, lngCount As Long
     ' invalid ID?
-    If ID < 0 Then Exit Function
+    If id < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -218,7 +218,7 @@ Public Function ResetCountByID(ByVal ID As Long) As Long
     If blnNoArrayInit Then Exit Function
     ' reset counts by ID
     For lngA = 0 To UBound(tick)
-        If tick(lngA).ID = ID Then
+        If tick(lngA).id = id Then
             tick(lngA).Count = 0
             lngCount = lngCount + 1
         End If
@@ -335,7 +335,7 @@ Public Function WaitForNextID() As Long
         End If
     End If
     ' return id
-    WaitForNextID = tick(lngIndex).ID
+    WaitForNextID = tick(lngIndex).id
 End Function
 Private Sub Class_Initialize()
     ' get frequency (= length of a second)

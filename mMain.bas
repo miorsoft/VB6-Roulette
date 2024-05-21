@@ -57,6 +57,7 @@ Private CNT       As Long
 
 Public RenderDev  As cMMDevice
 
+Public SOUNDSPLAYER As cSounds
 
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
@@ -93,6 +94,7 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
 
 
+    '------------ CREATE SOUNDS ---------------
     Dim I&
     Dim S$
     Dim FN$
@@ -124,10 +126,10 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
         GoogleSpeakCreateMP3_2 FN, "      " & "Rien ne va plus", "fr"
         PlayMP3 FN
     End If
+    '------------ END CREATE SOUNDS ---------------
 
 
-
-    SETUPSOUND
+    Set SOUNDSPLAYER = New cSounds
 
     If andLAUNCH Then LAUNCH
 
@@ -157,13 +159,14 @@ Public Sub LAUNCH()
 
     NSPINS = NSPINS + 1
 
-    If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
-    'If SoundMODE > 1 Then SOUNDFait.PLAY
+    'If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
+    If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Faites vos jeux.MP3", 0, 0, 2000
+
 
     '-<<<<--------- WAIT BETS
 
     'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Les Jeux sont faits.MP3"
-    If SoundMODE > 1 Then SOUNDLeJeux.PLAY
+    If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Les Jeux sont faits.MP3"
 
 
     WHEELLOOP
@@ -239,11 +242,18 @@ Private Sub ShowResult()
     UPDATESTAT
 
 
+
     If SoundMODE = 1 Then
-        SoundSLOT(N).PLAY
+        'SoundSLOT(N).PLAY
+        Slot2MP3 N, S
+        SOUNDSPLAYER.PlaySound S & ".mp3"
+
     Else
-        If SoundMODE <> 0 Then PlayMP3 Slot2MP3(N, S)
-        'If SoundMODE <> 0 Then SoundSLOT(N).PLAY
+        'If SoundMODE <> 0 Then PlayMP3 Slot2MP3(N, S)
+        If SoundMODE <> 0 Then
+            Slot2MP3 N, S
+            SOUNDSPLAYER.PlaySound S & ".mp3", , , 3500
+        End If
     End If
 
     LAUNCH
@@ -298,7 +308,8 @@ Public Sub WHEELLOOP()
                         CNT = -100000000#
                         ' PlayMP3 App.Path & "\Sounds\Rien ne va plus.MP3"
                         'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Rien ne va plus.MP3"
-                        If SoundMODE > 1 Then SOUNDRien.PLAY
+                        If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Rien ne va plus.MP3"
+
 
 
                     End If
@@ -342,7 +353,7 @@ Public Sub DRAWALL()
 
     CC.Restore
 
-    CC.ARC BallX + CX, BallY + CY, R + 1
+    CC.Arc BallX + CX, BallY + CY, R + 1
     CC.Fill True, Cairo.CreateSolidPatternLng(vbWhite)
     CC.SetSourceColor 0
     CC.Stroke
@@ -410,7 +421,7 @@ Public Sub SIMULATE()
 
     Dim DX#, DY#
 
-    Const WallSPEEDK As Double = 0.002
+    Const WallSPEEDK As Double = 1    '0.002
 
     WheelANG = WheelANG + WheelANGSpeed
 
@@ -535,10 +546,10 @@ Private Sub COLLISIONResponse(VX1, VY1, VX2, VY2, nDX, nDY)
     Const InvMassSum As Double = 0.001
     Const MassDiff As Double = -998
 
-    Dim parIx#, parIy#             'Parallel VEL for V1
-    Dim perpIx#, perpIy#           'Perpendicular VEL for V1
-    Dim parJx#, parJy#             'Parallel VEL for V2
-    Dim perpJx#, perpJy#           'Perpendicular VEL for V2
+    Dim parIx#, parIy#             'Parallel      to nDX,nDY  VEL for V1
+    Dim perpIx#, perpIy#           'Perpendicular to nDX,nDY  VEL for V1
+    Dim parJx#, parJy#             'Parallel      to nDX,nDY  VEL for V2
+    Dim perpJx#, perpJy#           'Perpendicular to nDX,nDY  VEL for V2
 
     parIx = VX1: parIy = VY1
     parJx = VX2: parJy = VY2
@@ -563,6 +574,21 @@ Private Sub COLLISIONResponse(VX1, VY1, VX2, VY2, nDX, nDY)
     VX2 = VX2 * Elasticity + perpJx * Friction
     VY2 = VY2 * Elasticity + perpJy * Friction
 
+    Dim Volume    As Long
+    Dim DX#, DY#
+
+    If Not (TURBO) Then
+        DX = parIx - parJx
+        DY = parIy - parJy
+        Volume = -7000 + Log(1 + (DX * DX + DY * DY) ^ 0.125) * 8000
+        If Volume > -0 Then Volume = -0
+        If Volume > -4500 Then SOUNDSPLAYER.PlaySound "Ball.mp3", , Volume
+
+Debug.Print Volume
+    End If
+
+
+
 End Sub
 
 Private Sub UPDATESTAT()
@@ -572,7 +598,7 @@ Private Sub UPDATESTAT()
     Dim Max       As Long
     Dim MAXALL    As Long
 
-    fMain.Text2 = "Rounds:" & NSPINS & "  Frequencies   " & Format$(100 / 38, "00.00") & vbCrLf & vbCrLf
+    fMain.Text2 = "Rounds:" & NSPINS & "  Frequencies   " & format$(100 / 38, "00.00") & vbCrLf & vbCrLf
     fMain.Text3 = "Late Numbers:" & vbCrLf & vbCrLf & vbCrLf
 
     For j = 1 To 38
@@ -585,7 +611,7 @@ Private Sub UPDATESTAT()
         Next
 
         'fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "    " & STATFreq(High) & "" & vbCrLf
-        fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "  " & Format$(100 * STATFreq(High) / NSPINS, "00.000") & "%  (" & STATFreq(High) & ")" & vbCrLf
+        fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "  " & format$(100 * STATFreq(High) / NSPINS, "00.000") & "%  (" & STATFreq(High) & ")" & vbCrLf
         STATFreq(High) = -STATFreq(High) - 1
     Next
     'RESTORE
@@ -608,7 +634,7 @@ Private Sub UPDATESTAT()
             End If
         Next
 
-        fMain.Text3 = fMain.Text3 & Slot2Number(High, True) & "  " & Format$(100 * STATRita(High) / MAXALL, "00.000") & "%  (" & STATRita(High) & ")" & vbCrLf
+        fMain.Text3 = fMain.Text3 & Slot2Number(High, True) & "  " & format$(100 * STATRita(High) / MAXALL, "00.000") & "%  (" & STATRita(High) & ")" & vbCrLf
         STATRita(High) = -STATRita(High) - 1
     Next
 
@@ -619,12 +645,13 @@ Private Sub UPDATESTAT()
     Next
 
 
-    fMain.Cls
-    For I = 0 To 37
-        fMain.Line (I * 12 + 12, fMain.ScaleHeight - 2)-(I * 12 + 12, -2 + fMain.ScaleHeight - 2300 * STATFreq(I) / NSPINS), vbBlack
-        fMain.Line (I * 12 + 15, fMain.ScaleHeight - 2)-(I * 12 + 15, -2 + fMain.ScaleHeight - 120 * STATRita(I) / MAXALL), vbGreen
-    Next
-
+    '---- basic Histogram
+    '    fMain.Cls
+    '    For I = 0 To 37
+    '        fMain.Line (I * 12 + 12, fMain.ScaleHeight - 2)-(I * 12 + 12, -2 + fMain.ScaleHeight - 2300 * STATFreq(I) / NSPINS), vbBlack
+    '        fMain.Line (I * 12 + 15, fMain.ScaleHeight - 2)-(I * 12 + 15, -2 + fMain.ScaleHeight - 120 * STATRita(I) / MAXALL), vbGreen
+    '    Next
+    '-------------
 
 
 

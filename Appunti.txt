@@ -1,0 +1,13 @@
+    If Not (TURBO) Then
+        DX = parIx - parJx
+        DY = parIy - parJy
+'        Volume = -10000 + (DX * DX + DY * DY) ^ 0.125 * 8000
+
+        
+        Volume = -7000 + Log(1 + (DX * DX + DY * DY) ^ 0.125) * 8000
+        
+        If Volume > -0 Then Volume = -0
+        If Volume > -4500 Then SOUNDSPLAYER.PlaySound "Ball.mp3", , Volume
+        
+        Debug.Print Volume
+    End If

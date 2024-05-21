@@ -58,7 +58,7 @@ Private Function GoogleSpeakCreateMP3(Number As Long, ByVal sText As String, Opt
 
     If Len(sText) > 100 Then Exit Function
 
-    FilePathName = App.Path & "\Sounds\" & Format(Number, "000") & ".MP3"
+    FilePathName = App.Path & "\Sounds\" & format(Number, "000") & ".MP3"
 
     URLDownloadToFile 0&, "https://translate.google.com/translate_tts?tl=" & Language & "&q=" & sText & "&client=tw-ob", FilePathName, 0&, 0&
 
@@ -189,7 +189,7 @@ Private Function JoinMP3(N As Long) As String
     fMain.Caption = "Joining MP3s...."
 
     For I = 1 To N
-        Names(I) = App.Path & "\Sounds\" & Format(I, "000") & ".MP3"
+        Names(I) = App.Path & "\Sounds\" & format(I, "000") & ".MP3"
     Next
 
     allMP3 = vbNullString

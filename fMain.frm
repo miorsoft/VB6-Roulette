@@ -161,6 +161,8 @@ Private Sub Form_Resize()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+    Set SOUNDSPLAYER = Nothing
+
     End
 End Sub
 
