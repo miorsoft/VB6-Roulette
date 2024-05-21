@@ -3,6 +3,7 @@ Option Explicit
 
 Private SRF       As cCairoSurface
 Private WheelSRF  As cCairoSurface
+Private TableSRF  As cCairoSurface
 
 Private CC        As cCairoContext
 
@@ -48,14 +49,20 @@ Private STATRita(0 To 37) As Long
 Public NSPINS     As Long
 
 Public TURBO      As Boolean
+Public SoundMODE As Long
 
 Private BallSTOPCount As Long
+
+Private CNT       As Long
+
 
 
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
 
     Set WheelSRF = Cairo.ImageList.AddImage("WHEEL", App.Path & "\RouletteWheel.png")
+    Set TableSRF = Cairo.ImageList.AddImage("TABLE", App.Path & "\AmericanTable.png")
+
     WheelImageRadius = WheelSRF.Width * 0.5
     CX = WheelImageRadius + 10
     CY = WheelImageRadius + 10
@@ -66,10 +73,16 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     fMain.Text2.Left = fMain.Text1.Width + fMain.Text1.Left + 5
     fMain.Text3.Left = fMain.Text2.Width + fMain.Text2.Left + 5
 
-    Set SRF = Cairo.CreateSurface(WheelImageRadius * 2 + 20, WheelImageRadius * 2 + 20, ImageSurface)
+
+
+
+
+    Set SRF = Cairo.CreateSurface(WheelImageRadius * 2 + 20 + TableSRF.Width, WheelImageRadius * 2 + 20, ImageSurface)
     Set CC = SRF.CreateContext
     CC.AntiAlias = CAIRO_ANTIALIAS_FAST
     CC.SetLineWidth 1
+    CC.SetSourceColor vbWhite: CC.Paint
+
 
     SLOTn(0) = 33: SLOTn(1) = 7: SLOTn(2) = 17: SLOTn(3) = 5: SLOTn(4) = 22: SLOTn(5) = 34: SLOTn(6) = 15: SLOTn(7) = 3
     SLOTn(8) = 24: SLOTn(9) = 36: SLOTn(10) = 13: SLOTn(11) = 1: SLOTn(12) = -1: SLOTn(13) = 27: SLOTn(14) = 10: SLOTn(15) = 25
@@ -77,23 +90,76 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     SLOTn(24) = 26: SLOTn(25) = 16: SLOTn(26) = 4: SLOTn(27) = 23: SLOTn(28) = 35: SLOTn(29) = 14: SLOTn(30) = 2: SLOTn(31) = 0
     SLOTn(32) = 20: SLOTn(33) = 9: SLOTn(34) = 28: SLOTn(35) = 32: SLOTn(36) = 11: SLOTn(37) = 30
 
+
+
+    Dim I&
+    Dim S$
+    Dim FN$
+
+
+    For I = 0 To 37
+        FN = Slot2MP3(I, S)
+        If Dir(FN) = vbNullString Then
+            GoogleSpeakCreateMP3_2 FN, "      " & S, "fr"
+            PlayMP3 FN
+        End If
+    Next
+    '
+
+    FN = App.Path & "\Sounds\Faites vos jeux.MP3"
+    If Dir(FN) = vbNullString Then
+        GoogleSpeakCreateMP3_2 FN, "      " & "Faites vos jeux", "fr"
+        PlayMP3 FN
+    End If
+
+    FN = App.Path & "\Sounds\Les Jeux sont faits.MP3"
+    If Dir(FN) = vbNullString Then
+        GoogleSpeakCreateMP3_2 FN, "      " & "Les Jeux sont faits", "fr"
+        PlayMP3 FN
+    End If
+
+    FN = App.Path & "\Sounds\Rien ne va plus.MP3"
+    If Dir(FN) = vbNullString Then
+        GoogleSpeakCreateMP3_2 FN, "      " & "Rien ne va plus", "fr"
+        PlayMP3 FN
+    End If
+
+
+
+
     If andLAUNCH Then LAUNCH
+
+
+
+
 
 End Sub
 
 
 Public Sub LAUNCH()
 
-    WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
+'    WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
+    WheelANGSpeed = 0.2 + (Rnd * 2 - 1) * 0.05
 
     BallX = -0
     BallY = -(OuterRadius - R) + 4 + Rnd * 14
-    BallVX = Rnd * 8
+    '    BallVX = Rnd * 8
+    BallVX = (Rnd * 2 - 1) * 8
+
     BallVY = 0
 
     While WheelANG > PI2: WheelANG = WheelANG - PI2: Wend
 
+
+
+
     NSPINS = NSPINS + 1
+
+    If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
+
+    '-<<<<--------- WAIT BETS
+
+    If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Les Jeux sont faits.MP3"
 
     WHEELLOOP
 
@@ -113,6 +179,15 @@ Public Function Slot2Number(Slot As Long, Optional JustNumber As Boolean = False
             Slot2Number = Slot2Number & Space(20)
         End If
     End If
+End Function
+Private Function Slot2MP3(Slot As Long, ByRef ToSpeak As String) As String
+
+    ToSpeak = Slot2Number(Slot)
+    ToSpeak = Left$(ToSpeak, 8) & " " & Replace(Right$(ToSpeak, Len(ToSpeak) - 8), " ", ".")
+    If Left$(ToSpeak, 2) = "00" Then ToSpeak = "doubler 0"
+    Slot2MP3 = App.Path & "\Sounds\" & ToSpeak & ".MP3"
+
+
 End Function
 
 Public Function Number2Slot(N As Long) As Long
@@ -157,6 +232,10 @@ Private Sub ShowResult()
 
     UPDATESTAT
 
+
+
+    If SoundMODE <> 0 Then PlayMP3 Slot2MP3(N, S)
+
     LAUNCH
 
 End Sub
@@ -187,7 +266,7 @@ Public Sub WHEELLOOP()
     '    End If
 
     BallSTOPCount = 0
-
+    CNT = 0
     Do
 
         Select Case TEMPO.WaitForNext
@@ -195,13 +274,23 @@ Public Sub WHEELLOOP()
             Case tCompute
 
                 SIMULATE
-                
+
                 If WheelANGSpeed < 0 Then
                     '                    Exit Do
                     WheelANGSpeed = 0
                 End If
                 If BallSTOPCount > 50 Then Exit Do
-            
+
+
+                CNT = CNT + 1
+                If Not (TURBO) Then
+                    If CNT > 450 Then
+                        CNT = -100000000#
+                        ' PlayMP3 App.Path & "\Sounds\Rien ne va plus.MP3"
+                        If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Rien ne va plus.MP3"
+                    End If
+                End If
+
             Case tDRAW
                 DRAWALL
                 DoEvents
@@ -221,7 +310,8 @@ End Sub
 
 Public Sub DRAWALL()
 
-    CC.SetSourceColor vbWhite: CC.Paint
+    '   CC.SetSourceColor vbWhite: CC.Paint
+
     CC.Save
     CC.TranslateDrawings CX, CY
     CC.RotateDrawings WheelANG
@@ -244,8 +334,13 @@ Public Sub DRAWALL()
     CC.SetSourceColor 0
     CC.Stroke
 
-    '    fMain.Picture = SRF.Picture
-    SRF.DrawToDC fMain.hDC
+
+
+    CC.RenderSurfaceContent TableSRF, WheelImageRadius * 2 + 20, 0
+
+    fMain.Picture = SRF.Picture
+    '    SRF.DrawToDC fMain.hDC
+    'fMain.Refresh
 
 End Sub
 
@@ -306,8 +401,10 @@ Public Sub SIMULATE()
 
     WheelANG = WheelANG + WheelANGSpeed
 
-    WheelANGSpeed = WheelANGSpeed * 0.997 - 0.00001
-    If WheelANGSpeed > 0 Then WheelANGSpeed = WheelANGSpeed - 0.00001
+'    WheelANGSpeed = WheelANGSpeed * 0.997
+    WheelANGSpeed = WheelANGSpeed * 0.9974
+    
+    If WheelANGSpeed > 0.000005 Then WheelANGSpeed = WheelANGSpeed - 0.000005
 
     DistFromCenter = Sqr(BallX * BallX + BallY * BallY)
     invDFC = 1# / DistFromCenter
@@ -328,6 +425,8 @@ Public Sub SIMULATE()
     End If
 
     If DistFromCenter < InnerRadius Then    'Beyond INNER Radius --->  Reflect Velocity
+    
+        
         COLLISIONResponse BallVX, BallVY, -DY * DistFromCenter * WallSPEEDK * WheelANGSpeed, DX * DistFromCenter * WallSPEEDK * WheelANGSpeed, -DX, -DY
         DistFromCenter = InnerRadius
         BallX = DX * DistFromCenter
@@ -335,17 +434,18 @@ Public Sub SIMULATE()
     End If
 
     '
-    BallVX = BallVX - DY * DistFromCenter * 0.003 * WheelANGSpeed    ' Force induced by spinning wheel Floor
-    BallVY = BallVY + DX * DistFromCenter * 0.003 * WheelANGSpeed
+    BallVX = BallVX - DY * DistFromCenter * WheelANGSpeed * 0.003 '0.003    ' Force induced by spinning wheel Floor
+    BallVY = BallVY + DX * DistFromCenter * WheelANGSpeed * 0.003
 
-    BallVX = BallVX - DX * 0.11    '0.15    '0.25    'Toward Center (Like CONE) [Wheel Slope]
-    BallVY = BallVY - DY * 0.11    '0.15
+    BallVX = BallVX - DX * 0.05 ' 0.11    '0.15    '0.25    'Toward Center (Like CONE) [Wheel Slope]
+    BallVY = BallVY - DY * 0.05 ' 0.11    '0.15
 
     BallVX = BallVX * 0.997        '.995        'GLOABAL Friction
     BallVY = BallVY * 0.997
 
     BallX = BallX + BallVX         'Update Position
     BallY = BallY + BallVY
+
 
     If (BallVX * BallVX + BallVY * BallVY) < 0.01 Then BallSTOPCount = BallSTOPCount + 1 Else: BallSTOPCount = 0
 
@@ -386,8 +486,8 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
             rNY = rNY / rDIST
 
 
-            wVX = -SA * DFC * WheelANGSpeed * 1.31
-            wVY = CA * DFC * WheelANGSpeed * 1.31
+            wVX = -SA * DFC * WheelANGSpeed * 1#  '* 1.31
+            wVY = CA * DFC * WheelANGSpeed * 1#  '* 1.31
 
             '            TVX = BallVX
             '            TVY = BallVY
@@ -399,8 +499,8 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
             '            BallY = BallY - TVY
 
             Penetration = ((R + 3) - rDIST)
-            BallX = BallX + rNX * Penetration * 2
-            BallY = BallY + rNY * Penetration * 2
+            BallX = BallX + rNX * Penetration ' * 2
+            BallY = BallY + rNY * Penetration ' * 2
 
             '1 Step forward
             BallX = BallX + BallVX
@@ -414,8 +514,8 @@ End Sub
 
 Private Sub COLLISIONResponse(VX1, VY1, VX2, VY2, nDX, nDY)
 
-    Const Elasticity As Double = 0.9    '0.7
-    Const Friction As Double = 0.9    '0.9
+    Const Elasticity As Double = 0.86    '0.7
+    Const Friction As Double = 0.975    '0.9
 
     Const MassI   As Double = 1
     Const MassJ   As Double = 999
