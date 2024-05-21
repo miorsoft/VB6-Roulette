@@ -49,12 +49,13 @@ Private STATRita(0 To 37) As Long
 Public NSPINS     As Long
 
 Public TURBO      As Boolean
-Public SoundMODE As Long
+Public SoundMODE  As Long
 
 Private BallSTOPCount As Long
 
 Private CNT       As Long
 
+Public RenderDev  As cMMDevice
 
 
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
@@ -126,6 +127,7 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
 
 
+    SETUPSOUND
 
     If andLAUNCH Then LAUNCH
 
@@ -138,7 +140,7 @@ End Sub
 
 Public Sub LAUNCH()
 
-'    WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
+    '    WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
     WheelANGSpeed = 0.2 + (Rnd * 2 - 1) * 0.05
 
     BallX = -0
@@ -156,10 +158,13 @@ Public Sub LAUNCH()
     NSPINS = NSPINS + 1
 
     If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
+    'If SoundMODE > 1 Then SOUNDFait.PLAY
 
     '-<<<<--------- WAIT BETS
 
-    If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Les Jeux sont faits.MP3"
+    'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Les Jeux sont faits.MP3"
+    If SoundMODE > 1 Then SOUNDLeJeux.PLAY
+
 
     WHEELLOOP
 
@@ -180,7 +185,8 @@ Public Function Slot2Number(Slot As Long, Optional JustNumber As Boolean = False
         End If
     End If
 End Function
-Private Function Slot2MP3(Slot As Long, ByRef ToSpeak As String) As String
+Public Function Slot2MP3(Slot As Long, ByRef ToSpeak As String) As String
+
 
     ToSpeak = Slot2Number(Slot)
     ToSpeak = Left$(ToSpeak, 8) & " " & Replace(Right$(ToSpeak, Len(ToSpeak) - 8), " ", ".")
@@ -233,8 +239,12 @@ Private Sub ShowResult()
     UPDATESTAT
 
 
-
-    If SoundMODE <> 0 Then PlayMP3 Slot2MP3(N, S)
+    If SoundMODE = 1 Then
+        SoundSLOT(N).PLAY
+    Else
+        If SoundMODE <> 0 Then PlayMP3 Slot2MP3(N, S)
+        'If SoundMODE <> 0 Then SoundSLOT(N).PLAY
+    End If
 
     LAUNCH
 
@@ -287,7 +297,10 @@ Public Sub WHEELLOOP()
                     If CNT > 450 Then
                         CNT = -100000000#
                         ' PlayMP3 App.Path & "\Sounds\Rien ne va plus.MP3"
-                        If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Rien ne va plus.MP3"
+                        'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Rien ne va plus.MP3"
+                        If SoundMODE > 1 Then SOUNDRien.PLAY
+
+
                     End If
                 End If
 
@@ -329,7 +342,7 @@ Public Sub DRAWALL()
 
     CC.Restore
 
-    CC.Arc BallX + CX, BallY + CY, R + 1
+    CC.ARC BallX + CX, BallY + CY, R + 1
     CC.Fill True, Cairo.CreateSolidPatternLng(vbWhite)
     CC.SetSourceColor 0
     CC.Stroke
@@ -401,9 +414,9 @@ Public Sub SIMULATE()
 
     WheelANG = WheelANG + WheelANGSpeed
 
-'    WheelANGSpeed = WheelANGSpeed * 0.997
+    '    WheelANGSpeed = WheelANGSpeed * 0.997
     WheelANGSpeed = WheelANGSpeed * 0.9974
-    
+
     If WheelANGSpeed > 0.000005 Then WheelANGSpeed = WheelANGSpeed - 0.000005
 
     DistFromCenter = Sqr(BallX * BallX + BallY * BallY)
@@ -425,8 +438,8 @@ Public Sub SIMULATE()
     End If
 
     If DistFromCenter < InnerRadius Then    'Beyond INNER Radius --->  Reflect Velocity
-    
-        
+
+
         COLLISIONResponse BallVX, BallVY, -DY * DistFromCenter * WallSPEEDK * WheelANGSpeed, DX * DistFromCenter * WallSPEEDK * WheelANGSpeed, -DX, -DY
         DistFromCenter = InnerRadius
         BallX = DX * DistFromCenter
@@ -434,11 +447,11 @@ Public Sub SIMULATE()
     End If
 
     '
-    BallVX = BallVX - DY * DistFromCenter * WheelANGSpeed * 0.003 '0.003    ' Force induced by spinning wheel Floor
+    BallVX = BallVX - DY * DistFromCenter * WheelANGSpeed * 0.003    '0.003    ' Force induced by spinning wheel Floor
     BallVY = BallVY + DX * DistFromCenter * WheelANGSpeed * 0.003
 
-    BallVX = BallVX - DX * 0.05 ' 0.11    '0.15    '0.25    'Toward Center (Like CONE) [Wheel Slope]
-    BallVY = BallVY - DY * 0.05 ' 0.11    '0.15
+    BallVX = BallVX - DX * 0.05    ' 0.11    '0.15    '0.25    'Toward Center (Like CONE) [Wheel Slope]
+    BallVY = BallVY - DY * 0.05    ' 0.11    '0.15
 
     BallVX = BallVX * 0.997        '.995        'GLOABAL Friction
     BallVY = BallVY * 0.997
@@ -486,8 +499,8 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
             rNY = rNY / rDIST
 
 
-            wVX = -SA * DFC * WheelANGSpeed * 1#  '* 1.31
-            wVY = CA * DFC * WheelANGSpeed * 1#  '* 1.31
+            wVX = -SA * DFC * WheelANGSpeed * 1#    '* 1.31
+            wVY = CA * DFC * WheelANGSpeed * 1#    '* 1.31
 
             '            TVX = BallVX
             '            TVY = BallVY
@@ -499,8 +512,8 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
             '            BallY = BallY - TVY
 
             Penetration = ((R + 3) - rDIST)
-            BallX = BallX + rNX * Penetration ' * 2
-            BallY = BallY + rNY * Penetration ' * 2
+            BallX = BallX + rNX * Penetration    ' * 2
+            BallY = BallY + rNY * Penetration    ' * 2
 
             '1 Step forward
             BallX = BallX + BallVX
@@ -554,7 +567,7 @@ End Sub
 
 Private Sub UPDATESTAT()
     Dim I         As Long
-    Dim J         As Long
+    Dim j         As Long
     Dim High      As Long
     Dim Max       As Long
     Dim MAXALL    As Long
@@ -562,7 +575,7 @@ Private Sub UPDATESTAT()
     fMain.Text2 = "Rounds:" & NSPINS & "  Frequencies   " & Format$(100 / 38, "00.00") & vbCrLf & vbCrLf
     fMain.Text3 = "Late Numbers:" & vbCrLf & vbCrLf & vbCrLf
 
-    For J = 1 To 38
+    For j = 1 To 38
         Max = -1000000000
         For I = 0 To 37
             If STATFreq(I) > Max Then
@@ -586,7 +599,7 @@ Private Sub UPDATESTAT()
         If STATRita(I) > MAXALL Then MAXALL = STATRita(I)
     Next
 
-    For J = 1 To 38
+    For j = 1 To 38
         Max = -1000000000
         For I = 0 To 37
             If STATRita(I) > Max Then

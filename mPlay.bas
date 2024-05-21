@@ -37,7 +37,7 @@ Public Sub PlayAsync(ByVal MP3Path As String)
     hWnd = fMain.hWnd
 
 
-SendMCIString "close all", True
+    SendMCIString "close all", True
 
 
     MP3Path = ShortPath(MP3Path)

@@ -48,34 +48,34 @@ Public Function GoogleSpeakLess100chars(ByVal sText As String, Optional ByVal La
 End Function
 
 Private Function GoogleSpeakCreateMP3(Number As Long, ByVal sText As String, Optional ByVal Language As String = "es", Optional ByVal bDoEvents As Boolean = True) As Boolean
-    
+
     On Error Resume Next
     Dim FilePathName As String
-    Dim ML As String
+    Dim ML        As String
     Dim FileLength As Long
 
     'sText = Replace(sText, vbCrLf, " ")
 
     If Len(sText) > 100 Then Exit Function
 
-   FilePathName = App.Path & "\Sounds\" & Format(Number, "000") & ".MP3"
+    FilePathName = App.Path & "\Sounds\" & Format(Number, "000") & ".MP3"
 
     URLDownloadToFile 0&, "https://translate.google.com/translate_tts?tl=" & Language & "&q=" & sText & "&client=tw-ob", FilePathName, 0&, 0&
 
 End Function
 
 Public Function GoogleSpeakCreateMP3_2(FilePathName As String, ByVal sText As String, Optional ByVal Language As String = "es", Optional ByVal bDoEvents As Boolean = True) As Boolean
-    
+
     On Error Resume Next
-'    Dim FilePathName As String
-    Dim ML As String
+    '    Dim FilePathName As String
+    Dim ML        As String
     Dim FileLength As Long
 
     'sText = Replace(sText, vbCrLf, " ")
 
     If Len(sText) > 100 Then Exit Function
 
-'    FilePathName = App.Path & "\Sounds\" & Format(Number, "000") & ".MP3"
+    '    FilePathName = App.Path & "\Sounds\" & Format(Number, "000") & ".MP3"
 
     URLDownloadToFile 0&, "https://translate.google.com/translate_tts?tl=" & Language & "&q=" & sText & "&client=tw-ob", FilePathName, 0&, 0&
 
@@ -94,7 +94,7 @@ Public Sub SpeekMoreThan100(ByRef sText As String, Lang As String)
 
     S = sText
 
-    S = Right$(S, Len(S) - 2)     'remove 1st 2 char (to remove first vbCrLf)
+    S = Right$(S, Len(S) - 2)      'remove 1st 2 char (to remove first vbCrLf)
 
     S = Replace(S, "&", "and")
     S = Replace(S, Chr$(34), "")
@@ -115,7 +115,7 @@ Public Sub SpeekMoreThan100(ByRef sText As String, Lang As String)
                 NS = NS + 1
                 ReDim Preserve SS(NS)
                 SS(NS) = S
-                Debug.Print SS(NS) & "-----------"
+Debug.Print SS(NS) & "-----------"
                 Exit Do
             End If
 
@@ -133,7 +133,7 @@ Public Sub SpeekMoreThan100(ByRef sText As String, Lang As String)
                 If II = 0 Then II = II2
                 SS(NS) = Left$(S, II)
                 S = Right$(S, Len(S) - II)
-                Debug.Print SS(NS) & "-----------"
+Debug.Print SS(NS) & "-----------"
                 If Len(SS(NS)) = 0 Then Exit Do
                 I = 0
                 II = 0
@@ -212,12 +212,12 @@ Private Function JoinMP3(N As Long) As String
 
 End Function
 
-Public Sub PlayMP3(FN As String)    ', Optional bDoEvents As Boolean = True)
+Public Sub PlayMP3(FN As String)   ', Optional bDoEvents As Boolean = True)
 
     Dim ML        As String
     Dim FileLength As Long
 
-'    fMain.Caption = "Speaking... " & FN
+    '    fMain.Caption = "Speaking... " & FN
 
     If mciSendString("open " & Chr$(34) & FN & Chr$(34) & " type MpegVideo" & " alias myfile", 0&, 0&, 0&) = 0 Then
         ML = String(30, 0)
@@ -231,9 +231,9 @@ Public Sub PlayMP3(FN As String)    ', Optional bDoEvents As Boolean = True)
                     If Val(ML) = FileLength Then Exit Do
                     'If bDoEvents Then DoEvents
                     'fmain.PB.Value = Val(ML) \ 10
-'                    DoEvents
-'                    DoEvents
-'                    DoEvents
+                    '                    DoEvents
+                    '                    DoEvents
+                    '                    DoEvents
                 Loop
             End If
         End If
