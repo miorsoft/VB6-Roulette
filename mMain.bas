@@ -84,7 +84,7 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     TableX = WheelImageRadius * 2 + 20
     TableY = 0
 
-    TBO = TableH * 0.025
+    TBO = TableH * 0.028 '0.025
     TcX = TableW / 15.5
     TcY = (TableH - TBO * 2) / 5
 
@@ -142,6 +142,10 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
     Set SOUNDSPLAYER = New cSounds
 
+SETUPWINTABLE
+
+
+
     If andLAUNCH Then LAUNCH
 
 
@@ -173,7 +177,7 @@ Public Sub LAUNCH()
 
 
     '-<<<<--------- WAIT BETS
-    BET
+    If Not (TURBO) Then BET
     '--------------------------
 
     'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Les Jeux sont faits.MP3"

@@ -32,7 +32,6 @@ Begin VB.Form fMain
       Left            =   6480
       TabIndex        =   4
       Top             =   9600
-      Visible         =   0   'False
       Width           =   1215
    End
    Begin VB.TextBox Text3 
@@ -208,18 +207,22 @@ Private Sub Command1_Click()
     Dim tCC       As cCairoContext
     Dim I         As Long
 
+Const SCALA As Double = 0.74
+
+
+
     Const FontName As String = "Times New Roman"
-    Const FontSize As Double = 28 * 0.72
+    Const FontSize As Double = 28 * SCALA
 
     SETUP
 
-    Set tSRF = Cairo.CreateSurface(1100 * 0.72, 631 * 0.72, ImageSurface)
+    Set tSRF = Cairo.CreateSurface(1100 * SCALA, 631 * SCALA, ImageSurface)
     Set tCC = tSRF.CreateContext
 
     W = tSRF.Width
     H = tSRF.Height
 
-    BORDER = H * 0.025
+    BORDER = H * 0.028 '0.025
     CellX = W / 15.5
     CellY = (H - BORDER * 2) / 5
 
