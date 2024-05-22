@@ -102,6 +102,8 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     CC.SetSourceColor vbWhite: CC.Paint
 
 
+
+
     SLOTn(0) = 33: SLOTn(1) = 7: SLOTn(2) = 17: SLOTn(3) = 5: SLOTn(4) = 22: SLOTn(5) = 34: SLOTn(6) = 15: SLOTn(7) = 3
     SLOTn(8) = 24: SLOTn(9) = 36: SLOTn(10) = 13: SLOTn(11) = 1: SLOTn(12) = -1: SLOTn(13) = 27: SLOTn(14) = 10: SLOTn(15) = 25
     SLOTn(16) = 29: SLOTn(17) = 12: SLOTn(18) = 8: SLOTn(19) = 19: SLOTn(20) = 31: SLOTn(21) = 18: SLOTn(22) = 6: SLOTn(23) = 21
@@ -146,6 +148,8 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
 
     Set SOUNDSPLAYER = New cSounds
+
+
 
     SETUPWINTABLE
 

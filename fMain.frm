@@ -61,6 +61,7 @@ Begin VB.Form fMain
       Left            =   6480
       TabIndex        =   4
       Top             =   9600
+      Visible         =   0   'False
       Width           =   1215
    End
    Begin VB.TextBox Text3 
