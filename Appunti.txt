@@ -1,29 +1,34 @@
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If BetActive Then
-    
+Public Sub MANAGEBETS()
+    Dim X&, Y&, V&
+    Dim WIN       As Long
+    Dim S()       As String
+    Dim I&
 
-    
-    
-    X = X - TableX
-    X = Round(X / TcX) * TcX + TableX
-    
-    Y = Y - TableY - TBO
-    Y = Round(Y / TcY) * TcY + TableY + TBO
-    
-    
-        bMX = X
-        bMY = Y
 
-    End If
+    fMain.txtWIN = "WINS:" & vbCrLf
+
+
+    For Y = 0 To 10
+        For X = 3 To 30
+            V = FICHEScount(X, Y)
+            If V Then
+
+                S = Split(WINTABLEString(X, Y), ",")
+                For I = 0 To UBound(S)
+                    If NumberExtracted = Val(S(I)) Then
+                    Stop
+                    
+                        WIN = V * WINTABLE(X, Y)
+                        Budget = Budget + WIN
+                        fMain.txtWIN = fMain.txtWIN & WIN & "   "
+
+                    End If
+                Next
+            End If
+        Next
+    Next
+fMain.txtWIN.Refresh
+
+
 End Sub
 
-
-
-TableW = TableSRF.Width
-TableH = TableSRF.Height
-TableX = WheelImageRadius * 2 + 20
-TableY = 0
-
-    TBO = TableH * 0.025
-    TcX = TableW / 15.5
-    TcY = (TableH - TBO * 2) / 5

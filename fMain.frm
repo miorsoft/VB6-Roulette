@@ -18,6 +18,35 @@ Begin VB.Form fMain
    ScaleHeight     =   12375
    ScaleWidth      =   23610
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox PICpanel 
+      Appearance      =   0  'Flat
+      ForeColor       =   &H80000008&
+      Height          =   2295
+      Left            =   240
+      ScaleHeight     =   2265
+      ScaleWidth      =   9105
+      TabIndex        =   7
+      Top             =   360
+      Width           =   9135
+      Begin VB.TextBox txtWIN 
+         Height          =   1695
+         Left            =   120
+         Locked          =   -1  'True
+         MultiLine       =   -1  'True
+         TabIndex        =   9
+         Text            =   "fMain.frx":0000
+         Top             =   480
+         Width           =   1815
+      End
+      Begin VB.Label lBudget 
+         Caption         =   "Budget"
+         Height          =   615
+         Left            =   120
+         TabIndex        =   8
+         Top             =   120
+         Width           =   1935
+      End
+   End
    Begin VB.ComboBox cmbSound 
       Height          =   375
       Left            =   7680
@@ -46,6 +75,7 @@ Begin VB.Form fMain
       EndProperty
       Height          =   10815
       Left            =   16920
+      Locked          =   -1  'True
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   3
@@ -73,6 +103,7 @@ Begin VB.Form fMain
       EndProperty
       Height          =   10815
       Left            =   14160
+      Locked          =   -1  'True
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   1
@@ -91,6 +122,7 @@ Begin VB.Form fMain
       EndProperty
       Height          =   10815
       Left            =   9720
+      Locked          =   -1  'True
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   0
@@ -165,9 +197,27 @@ End Sub
 
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If BetActive Then
-        If Button = 1 Then FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) + 1
-        If Button = 2 Then FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) - 1: If FICHEScount(BetPosX, BetPosY) < 0 Then FICHEScount(BetPosX, BetPosY) = 0
+        If Button = 1 Then
+            If WINTABLE(BetPosX, BetPosY) <> 0 Then
+                If Budget > 0 Then
+                    FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) + 1
+                    Budget = Budget - 1
+                End If
+            End If
+
+        End If
+
+        If Button = 2 Then
+            If FICHEScount(BetPosX, BetPosY) > 0 Then
+                FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) - 1
+                Budget = Budget + 1
+            End If
+        End If
+
     End If
+
+    fMain.lBudget = "Budget: " & Budget
+
 
 End Sub
 
@@ -207,7 +257,7 @@ Private Sub Command1_Click()
     Dim tCC       As cCairoContext
     Dim I         As Long
 
-Const SCALA As Double = 0.74
+    Const SCALA   As Double = 0.74
 
 
 
@@ -222,7 +272,7 @@ Const SCALA As Double = 0.74
     W = tSRF.Width
     H = tSRF.Height
 
-    BORDER = H * 0.028 '0.025
+    BORDER = H * 0.028             '0.025
     CellX = W / 15.5
     CellY = (H - BORDER * 2) / 5
 

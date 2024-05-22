@@ -59,7 +59,7 @@ Public RenderDev  As cMMDevice
 
 Public SOUNDSPLAYER As cSounds
 
-
+Public NumberExtracted As Long
 
 
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
@@ -84,9 +84,14 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     TableX = WheelImageRadius * 2 + 20
     TableY = 0
 
-    TBO = TableH * 0.028 '0.025
+    TBO = TableH * 0.028           '0.025
     TcX = TableW / 15.5
     TcY = (TableH - TBO * 2) / 5
+
+
+    fMain.PICpanel.Left = TableX
+    fMain.PICpanel.Top = TableY + TableH
+
 
 
 
@@ -142,7 +147,7 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
     Set SOUNDSPLAYER = New cSounds
 
-SETUPWINTABLE
+    SETUPWINTABLE
 
 
 
@@ -227,7 +232,7 @@ End Function
 
 Private Sub ShowResult()
     Dim N         As Long
-    Dim Result    As Long
+
     Dim S         As String
     Dim I&
 
@@ -244,7 +249,7 @@ Private Sub ShowResult()
 
 
 
-    Result = SLOTn(N)
+    NumberExtracted = SLOTn(N)
 
     S = Slot2Number(N)
     S = S & "  (" & STATFreq(N) & ")"
@@ -257,6 +262,7 @@ Private Sub ShowResult()
     UPDATESTAT
 
 
+    MANAGEBETS
 
     If SoundMODE = 1 Then
         'SoundSLOT(N).PLAY
@@ -270,6 +276,12 @@ Private Sub ShowResult()
             SOUNDSPLAYER.PlaySound S & ".mp3", , , 3500
         End If
     End If
+
+
+
+
+
+
 
     LAUNCH
 
@@ -348,7 +360,7 @@ Public Sub WHEELLOOP()
 
 End Sub
 
-Public Sub DRAWALL()
+Public Sub DRAWALL(Optional DoHighlight As Boolean)
 
     '   CC.SetSourceColor vbWhite: CC.Paint
 
@@ -385,6 +397,9 @@ Public Sub DRAWALL()
 
     DRAWBets
 
+
+
+    If DoHighlight Then HILightBET    'HIlight CStr(Timer * 7 Mod 36 + 1)
 
 
 
@@ -503,7 +518,7 @@ Public Sub SIMULATE()
     If (BallVX * BallVX + BallVY * BallVY) < 0.01 Then BallSTOPCount = BallSTOPCount + 1 Else: BallSTOPCount = 0
 
 
-    If BetActive Then BetManage
+
 
 End Sub
 

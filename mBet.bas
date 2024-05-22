@@ -5,8 +5,8 @@ Option Explicit
 Public BetMouseX#
 Public BetMouseY#
 
-Public BetPosX        As Long
-Public BetPosY        As Long
+Public BetPosX    As Long
+Public BetPosY    As Long
 
 
 Public BetActive  As Boolean
@@ -32,6 +32,8 @@ Public WINTABLEString() As String
 
 
 Public Const FicheRadius As Double = 12
+
+Public Budget     As Long
 
 
 Public Sub SETUPWINTABLE()
@@ -85,7 +87,7 @@ Public Sub SETUPWINTABLE()
         WINTABLE(X, 6) = 12        '3 Numbers vert
         WINTABLE(X, 0) = 12        '3 Numbers vert (SAME)
         N = (X - 5) / 2 * 3 + 1
-        S = N & "," & N + 1 & "," & N + 3
+        S = N & "," & N + 1 & "," & N + 2
         WINTABLEString(X, 0) = S
         WINTABLEString(X, 6) = S
 
@@ -136,8 +138,8 @@ Public Sub SETUPWINTABLE()
     WINTABLE(3, 4) = 36
     WINTABLE(3, 5) = 36
 
-    WINTABLEString(3, 1) = "00"
-    WINTABLEString(3, 2) = "00"
+    WINTABLEString(3, 1) = "-1"
+    WINTABLEString(3, 2) = "-1"
     WINTABLEString(3, 4) = "0"
     WINTABLEString(3, 5) = "0"
 
@@ -200,11 +202,13 @@ Public Sub SETUPWINTABLE()
     '---------------------------
     For X = 13 To 15
         WINTABLE(X, 9) = 2         'Red
+        WINTABLEString(X, 9) = "1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36"
     Next
 
     '---------------------------
     For X = 17 To 19
         WINTABLE(X, 9) = 2         'Black
+        WINTABLEString(X, 9) = "2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35"
     Next
     '---------------------------
 
@@ -229,6 +233,10 @@ Public Sub SETUPWINTABLE()
     Next
     '---------------------------
 
+
+
+    Budget = 500
+
 End Sub
 
 
@@ -240,23 +248,22 @@ Public Sub BET()
 
     BetActive = True
 
+    fMain.lBudget = "Budget: " & Budget
+
     T = Timer
     Do
 
-        BetManage
         DoEvents
 
-        DRAWALL
+        DRAWALL True
 
 
-        If Timer > T + 9 Then Exit Do
+        If Timer > T + 10 Then Exit Do    '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     Loop While BetActive
 
 End Sub
 
-Public Sub BetManage()
 
-End Sub
 
 
 
@@ -295,19 +302,120 @@ Public Sub DRAWBets()
             If BetMouseY > TableY - FicheRadius Then
                 If BetMouseX + FicheRadius < TableW + TableX Then
                     If BetMouseY + FicheRadius < TableH + TableY Then
-                    If WINTABLE(BetPosX, BetPosY) <> 0 Then
-                        CC.SetSourceRGBA 1, 1, 0, 0.6
-                        CC.Arc BetMouseX, BetMouseY, FicheRadius
-                        CC.Fill
-                        CC.TextOut BetMouseX + 12, BetMouseY + 12, BetPosX & "," & BetPosY & "         " & WINTABLE(BetPosX, BetPosY)
+                        If WINTABLE(BetPosX, BetPosY) <> 0 Then
+                            CC.SetSourceRGBA 1, 1, 0, 0.6
+                            CC.Arc BetMouseX, BetMouseY, FicheRadius
+                            CC.Fill
+                            '                            CC.TextOut BetMouseX + 12, BetMouseY + 12, BetPosX & "," & BetPosY & "         " & WINTABLE(BetPosX, BetPosY)
+                        End If
+                    End If
 
-                    End If
-                    End If
-                    
                 End If
             End If
         End If
     End If
+
+End Sub
+
+
+Private Sub HIlight(S As String)
+    Dim N&
+    Dim X#, Y#
+
+    N = Val(S)
+
+    If N > 0 Then
+        X = TableX + TcX * (2 + ((N - 1) \ 3))
+        Y = TableY + TBO + TcY * 2 - TcY * ((N - 1) Mod 3)
+
+        CC.SetSourceRGBA 1, 1, 0, 0.25
+        CC.Rectangle X, Y, TcX, TcY
+        CC.Fill
+    Else
+
+        If N = 0 Then
+            X = TableX + TcX * 1
+            Y = TableY + TBO + TcY * 1.5
+            CC.SetSourceRGBA 1, 1, 0, 0.25
+            CC.Rectangle X, Y, TcX, TcY * 1.5
+            CC.Fill
+        Else                       '    -1          '00
+            X = TableX + TcX * 1
+            Y = TableY + TBO
+            CC.SetSourceRGBA 1, 1, 0, 0.25
+            CC.Rectangle X, Y, TcX, TcY * 1.5
+            CC.Fill
+        End If
+    End If
+
+End Sub
+
+Public Sub HILightBET()
+    Dim X&, Y&
+    Dim S()       As String
+    Dim I         As Long
+
+    For Y = 0 To 10
+        For X = 3 To 30
+            If FICHEScount(X, Y) Then
+                S = Split(WINTABLEString(X, Y), ",")
+                For I = 0 To UBound(S)
+                    HIlight S(I)
+                Next
+            End If
+        Next
+    Next
+
+    If BetMouseX > TableX - FicheRadius Then
+        If BetMouseY > TableY - FicheRadius Then
+            If BetMouseX + FicheRadius < TableW + TableX Then
+                If BetMouseY + FicheRadius < TableH + TableY Then
+                    If WINTABLE(BetPosX, BetPosY) <> 0 Then
+                        S = Split(WINTABLEString(BetPosX, BetPosY), ",")
+                        For I = 0 To UBound(S)
+                            HIlight S(I)
+                        Next
+                    End If
+                End If
+            End If
+        End If
+    End If
+
+End Sub
+
+
+
+Public Sub MANAGEBETS()
+    Dim X&, Y&, V&
+    Dim WIN       As Long
+    Dim S()       As String
+    Dim I&
+    Dim TOT       As Long
+
+
+    fMain.txtWIN = ""
+
+    For Y = 0 To 10
+        For X = 3 To 30
+            V = FICHEScount(X, Y)
+            If V Then
+
+                S = Split(WINTABLEString(X, Y), ",")
+                For I = 0 To UBound(S)
+                    If NumberExtracted = Val(S(I)) Then
+                        WIN = V * WINTABLE(X, Y)
+                        Budget = Budget + WIN
+                        fMain.txtWIN = fMain.txtWIN & V & " x " & WINTABLE(X, Y) & " = " & WIN & vbCrLf
+                        TOT = TOT + WIN
+                    End If
+                Next
+            End If
+        Next
+    Next
+
+    fMain.txtWIN = "WIN: " & TOT & "(Total)" & vbCrLf & fMain.txtWIN
+
+    fMain.txtWIN.Refresh
 
 
 End Sub
