@@ -147,6 +147,31 @@ Private Sub Form_Load()
 
 End Sub
 
+
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If BetActive Then
+        X = X - TableX
+        BetPosX = Round(X / TcX * 2)
+        X = BetPosX * TcX * 0.5 + TableX
+
+        Y = Y - TableY - TBO
+        BetPosY = Round(Y / TcY * 2)
+        Y = BetPosY * TcY * 0.5 + TableY + TBO
+
+        BetMouseX = X
+        BetMouseY = Y
+
+    End If
+End Sub
+
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If BetActive Then
+        If Button = 1 Then FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) + 1
+        If Button = 2 Then FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) - 1: If FICHEScount(BetPosX, BetPosY) < 0 Then FICHEScount(BetPosX, BetPosY) = 0
+    End If
+
+End Sub
+
 Private Sub Form_Resize()
     If fMain.WindowState <> vbMinimized Then
         fMain.Text1.Top = fMain.chkTurbo.Top
@@ -195,7 +220,6 @@ Private Sub Command1_Click()
     H = tSRF.Height
 
     BORDER = H * 0.025
-
     CellX = W / 15.5
     CellY = (H - BORDER * 2) / 5
 

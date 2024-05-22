@@ -1,13 +1,29 @@
-    If Not (TURBO) Then
-        DX = parIx - parJx
-        DY = parIy - parJy
-'        Volume = -10000 + (DX * DX + DY * DY) ^ 0.125 * 8000
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If BetActive Then
+    
 
-        
-        Volume = -7000 + Log(1 + (DX * DX + DY * DY) ^ 0.125) * 8000
-        
-        If Volume > -0 Then Volume = -0
-        If Volume > -4500 Then SOUNDSPLAYER.PlaySound "Ball.mp3", , Volume
-        
-        Debug.Print Volume
+    
+    
+    X = X - TableX
+    X = Round(X / TcX) * TcX + TableX
+    
+    Y = Y - TableY - TBO
+    Y = Round(Y / TcY) * TcY + TableY + TBO
+    
+    
+        bMX = X
+        bMY = Y
+
     End If
+End Sub
+
+
+
+TableW = TableSRF.Width
+TableH = TableSRF.Height
+TableX = WheelImageRadius * 2 + 20
+TableY = 0
+
+    TBO = TableH * 0.025
+    TcX = TableW / 15.5
+    TcY = (TableH - TBO * 2) / 5

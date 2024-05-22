@@ -5,7 +5,7 @@ Private SRF       As cCairoSurface
 Private WheelSRF  As cCairoSurface
 Private TableSRF  As cCairoSurface
 
-Private CC        As cCairoContext
+Public CC         As cCairoContext
 
 Private CX        As Double
 Private CY        As Double
@@ -59,6 +59,9 @@ Public RenderDev  As cMMDevice
 
 Public SOUNDSPLAYER As cSounds
 
+
+
+
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
 
@@ -76,6 +79,14 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     fMain.Text3.Left = fMain.Text2.Width + fMain.Text2.Left + 5
 
 
+    TableW = TableSRF.Width
+    TableH = TableSRF.Height
+    TableX = WheelImageRadius * 2 + 20
+    TableY = 0
+
+    TBO = TableH * 0.025
+    TcX = TableW / 15.5
+    TcY = (TableH - TBO * 2) / 5
 
 
 
@@ -155,8 +166,6 @@ Public Sub LAUNCH()
     While WheelANG > PI2: WheelANG = WheelANG - PI2: Wend
 
 
-
-
     NSPINS = NSPINS + 1
 
     'If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
@@ -164,6 +173,8 @@ Public Sub LAUNCH()
 
 
     '-<<<<--------- WAIT BETS
+    BET
+    '--------------------------
 
     'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Les Jeux sont faits.MP3"
     If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Les Jeux sont faits.MP3"
@@ -310,6 +321,7 @@ Public Sub WHEELLOOP()
                         'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Rien ne va plus.MP3"
                         If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Rien ne va plus.MP3"
 
+                        BetActive = False
 
 
                     End If
@@ -360,7 +372,20 @@ Public Sub DRAWALL()
 
 
 
-    CC.RenderSurfaceContent TableSRF, WheelImageRadius * 2 + 20, 0
+    CC.RenderSurfaceContent TableSRF, TableX, TableY
+
+
+
+
+
+
+    DRAWBets
+
+
+
+
+
+
 
     fMain.Picture = SRF.Picture
     '    SRF.DrawToDC fMain.hDC
@@ -473,6 +498,8 @@ Public Sub SIMULATE()
 
     If (BallVX * BallVX + BallVY * BallVY) < 0.01 Then BallSTOPCount = BallSTOPCount + 1 Else: BallSTOPCount = 0
 
+
+    If BetActive Then BetManage
 
 End Sub
 
@@ -653,6 +680,8 @@ Private Sub UPDATESTAT()
     '    Next
     '-------------
 
+    fMain.Refresh
+    DRAWALL
 
 
 End Sub

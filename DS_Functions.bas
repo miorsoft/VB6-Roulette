@@ -4,7 +4,7 @@ Option Explicit
 'Author: TheTrick
 
 Private Type CHUNK
-    id            As Long
+    ID            As Long
     szData        As Long
 End Type
 
@@ -173,7 +173,7 @@ Public Function DSCreateSoundBufferFromMemory(ByVal ds As DirectSound8, _
     If IsBadReadPtr(ByVal lpData, szData) Then GoTo ERROR_OUTOFMEMORY
     GetMem4 ByVal lpData, chkData
 
-    If chkData.id = RIFF_SIGNATURE Then
+    If chkData.ID = RIFF_SIGNATURE Then
         ' // Wave
         If IsBadReadPtr(ByVal lpData, 8) Then GoTo ERROR_OUTOFMEMORY
         GetMem8 ByVal lpData, chkData
@@ -194,7 +194,7 @@ Public Function DSCreateSoundBufferFromMemory(ByVal ds As DirectSound8, _
 
             If subChnk.szData > chkData.szData - 8 Then GoTo ERROR_OUTOFMEMORY
 
-            Select Case subChnk.id
+            Select Case subChnk.ID
                 Case FMT_SIGNATURE
 
                     If lpFmt Then GoTo ERROR_FORMAT

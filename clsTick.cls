@@ -36,7 +36,7 @@ Private Const QS_ALLEVENTS = (QS_INPUT Or QS_POSTMESSAGE Or QS_TIMER Or QS_PAINT
 
 ' tick data
 Private Type TICKS
-    id            As Long          ' identifier ID
+    ID            As Long          ' identifier ID
     Count         As Long          ' number of ticks done
     Ending        As Currency      ' the next ending tick
     FREQ          As Currency      ' tick frequency
@@ -59,10 +59,10 @@ Private Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency A
 ' to prevent 100% processor usage
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 ' add a new timed event
-Public Function Add(ByVal FramesPerSecond As Double, Optional ByVal id As Long = 0, Optional ByVal NoFrameSkip As Boolean = False) As Long
+Public Function Add(ByVal FramesPerSecond As Double, Optional ByVal ID As Long = 0, Optional ByVal NoFrameSkip As Boolean = False) As Long
     Dim blnNoArrayInit As Boolean, lngNewIndex As Long
     ' check for invalid input values
-    If id < 0 Then Add = -1: Exit Function
+    If ID < 0 Then Add = -1: Exit Function
     If FramesPerSecond <= 0 Then Add = -1: Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
@@ -74,7 +74,7 @@ Public Function Add(ByVal FramesPerSecond As Double, Optional ByVal id As Long =
     ReDim Preserve tick(lngNewIndex)
     ' set settings
     With tick(lngNewIndex)
-        .id = id
+        .ID = ID
         .FREQ = CCur(CDbl(m_curFreq) / FramesPerSecond)
     End With
     ' return the new index
@@ -97,10 +97,10 @@ Public Function Count(ByVal index As Long) As Long
     Count = tick(index).Count
 End Function
 ' how many times timed events of certain identifier have occurred?
-Public Function CountByID(ByVal id As Long) As Long
+Public Function CountByID(ByVal ID As Long) As Long
     Dim blnNoArrayInit As Boolean, lngA As Long, lngCount As Long
     ' invalid ID?
-    If id < 0 Then Exit Function
+    If ID < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -109,7 +109,7 @@ Public Function CountByID(ByVal id As Long) As Long
     If blnNoArrayInit Then Exit Function
     ' count totals by ID
     For lngA = 0 To UBound(tick)
-        If tick(lngA).id = id Then lngCount = lngCount + tick(lngA).Count
+        If tick(lngA).ID = ID Then lngCount = lngCount + tick(lngA).Count
     Next lngA
     ' finally... return the count
     CountByID = lngCount
@@ -154,9 +154,9 @@ Public Function Remove(ByVal index As Long) As Boolean
     Remove = True
 End Function
 ' remove timed events of certain identifier
-Public Function RemoveByID(ByVal id As Long) As Long
+Public Function RemoveByID(ByVal ID As Long) As Long
     Dim blnNoArrayInit As Boolean, lngA As Long, lngB As Long, lngCount As Long
-    If id < 0 Then Exit Function
+    If ID < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -166,7 +166,7 @@ Public Function RemoveByID(ByVal id As Long) As Long
     ' loop through all items
     For lngA = UBound(tick) To 0 Step -1
         ' remove ones with a matching ID
-        If tick(lngA).id = id Then
+        If tick(lngA).ID = ID Then
             If UBound(tick) > 0 Then
                 ' remove current item
                 For lngB = lngA To UBound(tick) - 1
@@ -206,10 +206,10 @@ Public Function ResetCount(ByVal index As Long) As Boolean
     ResetCount = True
 End Function
 ' reset event amount counter of certain identifier
-Public Function ResetCountByID(ByVal id As Long) As Long
+Public Function ResetCountByID(ByVal ID As Long) As Long
     Dim blnNoArrayInit As Boolean, lngA As Long, lngCount As Long
     ' invalid ID?
-    If id < 0 Then Exit Function
+    If ID < 0 Then Exit Function
     ' check if array is initialized
     blnNoArrayInit = (Not tick) = -1
     ' skip IDE error...
@@ -218,7 +218,7 @@ Public Function ResetCountByID(ByVal id As Long) As Long
     If blnNoArrayInit Then Exit Function
     ' reset counts by ID
     For lngA = 0 To UBound(tick)
-        If tick(lngA).id = id Then
+        If tick(lngA).ID = ID Then
             tick(lngA).Count = 0
             lngCount = lngCount + 1
         End If
@@ -335,7 +335,7 @@ Public Function WaitForNextID() As Long
         End If
     End If
     ' return id
-    WaitForNextID = tick(lngIndex).id
+    WaitForNextID = tick(lngIndex).ID
 End Function
 Private Sub Class_Initialize()
     ' get frequency (= length of a second)

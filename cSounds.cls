@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'Raw / Not Elagant  use of DS_Functions.bas to play multiple sounds....
+'Raw / Not Elagant  use of DirectSound_Functions.bas to play multiple sounds....
 
 '(By theTrick?)
 
@@ -146,19 +146,19 @@ Private Sub Class_Terminate()
 
 End Sub
 
-Public Property Get DataSource() As DataSource
-
-End Property
-
-Public Property Set DataSource(ByVal objDataSource As DataSource)
-
-End Property
-
-Public Property Get DataMember() As DataMember
-
-End Property
-
-Public Property Let DataMember(ByVal DataMember As DataMember)
-
-End Property
+''Public Property Get DataSource() As DataSource
+''
+''End Property
+''
+''Public Property Set DataSource(ByVal objDataSource As DataSource)
+''
+''End Property
+''
+''Public Property Get DataMember() As DataMember
+''
+''End Property
+''
+''Public Property Let DataMember(ByVal DataMember As DataMember)
+''
+''End Property
 
