@@ -38,7 +38,7 @@ Attribute TcX.VB_VarUserMemId = 1073741832
 Public TcY        As Double
 Attribute TcY.VB_VarUserMemId = 1073741833
 
-Public FichesBlaced() As Double
+Public FichesPlacedAt() As Double
 Public WINTABLEMultiplier() As Double
 Public WINTABLENumbersList() As String
 
@@ -263,7 +263,7 @@ End Sub
 Public Sub BET()
     Dim T#
 
-    ReDim FichesBlaced(30, 10)
+    ReDim FichesPlacedAt(30, 10)
 
     BetActive = True
 
@@ -312,7 +312,7 @@ Public Sub DRAWBets()
 
     For Y = 0 To 10
         For X = 3 To 30
-            V = FichesBlaced(X, Y)
+            V = FichesPlacedAt(X, Y)
             If V Then
                 DRAWfichesPilesAt X, Y, V
             End If
@@ -385,7 +385,7 @@ Public Sub HILightBET()
 
     For Y = 0 To 10
         For X = 3 To 30
-            If FichesBlaced(X, Y) Then
+            If FichesPlacedAt(X, Y) Then
                 S = Split(WINTABLENumbersList(X, Y), ",")
                 For I = 0 To UBound(S)
                     HIlight S(I)
@@ -426,7 +426,7 @@ Public Sub MANAGEBETS()
 
     For Y = 0 To 10
         For X = 3 To 30
-            V = FichesBlaced(X, Y)
+            V = FichesPlacedAt(X, Y)
             If V Then
                 S = Split(WINTABLENumbersList(X, Y), ",")
                 DoNOTWin = True
@@ -443,7 +443,7 @@ Public Sub MANAGEBETS()
 
     For Y = 0 To 10
         For X = 3 To 30
-            V = FichesBlaced(X, Y)
+            V = FichesPlacedAt(X, Y)
             If V Then
                 S = Split(WINTABLENumbersList(X, Y), ",")
                 For I = 0 To UBound(S)
@@ -487,8 +487,8 @@ Private Sub AnimateFichesOUT(X&, Y&)
     DX = 0.08 * DX / D
     DY = 0.08 * DY / D
 
-    FichesOUTAm = FichesBlaced(X, Y)
-    FichesBlaced(X, Y) = 0
+    FichesOUTAm = FichesPlacedAt(X, Y)
+    FichesPlacedAt(X, Y) = 0
 
     FichesOUTAnim = True
 
@@ -561,7 +561,7 @@ Private Sub AnimateFichesIN(X&, Y&, Amount As Long)
 
     FichesINAnim = False
 
-    FichesBlaced(X, Y) = Amount
+    FichesPlacedAt(X, Y) = Amount
 
     DRAWALL
     Sleep 400
