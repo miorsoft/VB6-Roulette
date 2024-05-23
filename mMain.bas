@@ -69,15 +69,29 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Set WheelSRF = Cairo.ImageList.AddImage("WHEEL", App.Path & "\RouletteWheel.png")
     Set TableSRF = Cairo.ImageList.AddImage("TABLE", App.Path & "\AmericanTable.png")
 
+
+
     WheelImageRadius = WheelSRF.Width * 0.5
     CX = WheelImageRadius + 10
     CY = WheelImageRadius + 10
 
     OuterRadius = WheelImageRadius - 14    '24
 
-    fMain.Text1.Left = CX * 2 + 5
-    fMain.Text2.Left = fMain.Text1.Width + fMain.Text1.Left + 5
-    fMain.Text3.Left = fMain.Text2.Width + fMain.Text2.Left + 5
+
+''' Chenge external White with green
+With WheelSRF.CreateContext
+.SetSourceRGB 0, 0.5, 0: .Paint
+.Arc WheelImageRadius, WheelImageRadius, WheelImageRadius
+.Clip
+.Paint , Cairo.ImageList.AddImage("WHEEL", App.Path & "\RouletteWheel.png").CreateSurfacePattern
+End With
+'----------------------
+
+
+
+
+
+
 
 
     TableW = TableSRF.Width
@@ -90,10 +104,19 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     TcY = (TableH - TBO * 2) / 5
 
 
-    fMain.PICpanel.Left = TableX
-    fMain.PICpanel.Top = TableY + TableH
-    fMain.PICpanel.Width = TableW
+    fMain.Text1.Left = TableX + TcX * 2 'CX * 2
+    fMain.Text2.Left = fMain.Text1.Width + fMain.Text1.Left + 5
+    fMain.Text3.Left = fMain.Text2.Width + fMain.Text2.Left + 5
 
+
+    fMain.PICpanel.Left = TableX + TcX * 2
+    fMain.PICpanel.Top = TableY + TableH
+    fMain.PICpanel.Width = TableW - TcX * 3.5
+    
+
+    fMain.chkTurbo.Left = fMain.PICpanel.Width - fMain.chkTurbo.Width - 5
+    fMain.Label1.Left = fMain.PICpanel.Width - fMain.Label1.Width - 5
+    fMain.cmbSound.Left = fMain.PICpanel.Width - fMain.cmbSound.Width - 5
 
 
 
@@ -101,7 +124,8 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Set CC = SRF.CreateContext
     CC.AntiAlias = CAIRO_ANTIALIAS_FAST
     CC.SetLineWidth 1
-    CC.SetSourceColor vbWhite: CC.Paint
+    'CC.SetSourceColor vbWhite: CC.Paint
+    CC.SetSourceRGB 0, 0.5, 0: CC.Paint
 
 
 

@@ -461,7 +461,7 @@ Public Sub MANAGEBETS()
         Next
     Next
 
-    fMain.txtWIN = "WIN: " & TOT & "(Total)" & vbCrLf & fMain.txtWIN
+    fMain.txtWIN = "WIN: " & TOT & " (Total)" & vbCrLf & fMain.txtWIN
 
     fMain.txtWIN.Refresh
     Sleep 1000

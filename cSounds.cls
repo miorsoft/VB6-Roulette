@@ -55,40 +55,40 @@ End Sub
 
 
 
-Public Sub PlaySoundOLD(S As String, Optional Pan As Long = 0, Optional Volume As Long = 0)
-    Dim desc      As DSBUFFERDESC
-    Dim I         As Long
-
-    desc.dwFlags = DSBCAPS_CTRLVOLUME Or DSBCAPS_CTRLPAN
-
-
-    For I = 0 To BUFFLEN
-
-        With SoundsSET(I)
-            If .FileName = S Then
-                If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
-                    .Buffer.SetPan Pan
-                    .Buffer.SetVolume Volume
-                    .Buffer.Play 0, 0, 0
-                    Exit For
-                End If
-            Else
-                If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
-                    Set .Buffer = DSCreateSoundBufferFromFile(DirectSound, App.Path & "\Sounds\" & S, desc)
-
-                    .Buffer.SetPan Pan
-                    .Buffer.SetVolume Volume
-                    .Buffer.Play 0, 0, 0
-
-                    .FileName = S
-                    Exit For
-                End If
-            End If
-        End With
-
-    Next
-
-End Sub
+'Public Sub PlaySoundOLD(S As String, Optional Pan As Long = 0, Optional Volume As Long = 0)
+'    Dim desc      As DSBUFFERDESC
+'    Dim I         As Long
+'
+'    desc.dwFlags = DSBCAPS_CTRLVOLUME Or DSBCAPS_CTRLPAN
+'
+'
+'    For I = 0 To BUFFLEN
+'
+'        With SoundsSET(I)
+'            If .FileName = S Then
+'                If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
+'                    .Buffer.SetPan Pan
+'                    .Buffer.SetVolume Volume
+'                    .Buffer.Play 0, 0, 0
+'                    Exit For
+'                End If
+'            Else
+'                If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
+'                    Set .Buffer = DSCreateSoundBufferFromFile(DirectSound, App.Path & "\Sounds\" & S, desc)
+'
+'                    .Buffer.SetPan Pan
+'                    .Buffer.SetVolume Volume
+'                    .Buffer.Play 0, 0, 0
+'
+'                    .FileName = S
+'                    Exit For
+'                End If
+'            End If
+'        End With
+'
+'    Next
+'
+'End Sub
 
 
 
