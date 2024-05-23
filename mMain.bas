@@ -279,7 +279,7 @@ Private Sub ShowResult()
         'If SoundMODE <> 0 Then PlayMP3 Slot2MP3(N, S)
         If SoundMODE <> 0 Then
             Slot2MP3 N, S
-            SOUNDSPLAYER.PlaySound S & ".mp3", , , 3500
+            SOUNDSPLAYER.PlaySound S & ".mp3", , , 3000
         End If
     End If
 
@@ -403,7 +403,9 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
 
     DRAWBets
 
-    If FichesOutAnim Then DRAWfichesPilesAt FichesOutX, FichesOutY, FichesOutAm
+    If FichesOUTAnim Then DRAWfichesPilesAt FichesOUTX, FichesOUTY, FichesOUTAm
+
+    If FichesINAnim Then DRAWfichesPilesAt FichesINX, FichesINY, FichesINAm
 
 
 

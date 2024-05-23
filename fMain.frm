@@ -198,20 +198,24 @@ End Sub
 
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If BetActive Then
-        If Button = 1 Then
-            If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
-                If BUDGET > 0 Then
-                    FichesBlaced(BetPosX, BetPosY) = FichesBlaced(BetPosX, BetPosY) + 1
-                    BUDGET = BUDGET - 1
+
+        If BetPosInsideBounds(BetPosX, BetPosY) Then
+            If Button = 1 Then
+
+                If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
+                    If BUDGET > 0 Then
+                        FichesBlaced(BetPosX, BetPosY) = FichesBlaced(BetPosX, BetPosY) + 1
+                        BUDGET = BUDGET - 1
+                        SOUNDSPLAYER.PlaySound "silver-quarter-4-44684.mp3", 0, -800
+                    End If
                 End If
             End If
 
-        End If
-
-        If Button = 2 Then
-            If FichesBlaced(BetPosX, BetPosY) > 0 Then
-                FichesBlaced(BetPosX, BetPosY) = FichesBlaced(BetPosX, BetPosY) - 1
-                BUDGET = BUDGET + 1
+            If Button = 2 Then
+                If FichesBlaced(BetPosX, BetPosY) > 0 Then
+                    FichesBlaced(BetPosX, BetPosY) = FichesBlaced(BetPosX, BetPosY) - 1
+                    BUDGET = BUDGET + 1
+                End If
             End If
         End If
 

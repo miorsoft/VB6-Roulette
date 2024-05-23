@@ -11,11 +11,16 @@ Public BetPosY    As Long
 
 Public BetActive  As Boolean
 
-Public FichesOutAnim As Boolean
-Public FichesOutX As Double
-Public FichesOutY As Double
-Public FichesOutAm As Long
+Public FichesOUTAnim As Boolean
+Public FichesOUTX As Double
+Public FichesOUTY As Double
+Public FichesOUTAm As Long
 
+
+Public FichesINAnim As Boolean
+Public FichesINX  As Double
+Public FichesINY  As Double
+Public FichesINAm As Long
 
 
 Public TableW     As Double
@@ -42,6 +47,13 @@ Public Const FicheRadius As Double = 12
 
 Public BUDGET     As Long
 
+Public Function BetPosInsideBounds(ByVal X&, ByVal Y&) As Boolean
+    BetPosInsideBounds = True
+    If X < 3 Then BetPosInsideBounds = False: Exit Function
+    If X > 30 Then BetPosInsideBounds = False: Exit Function
+    If Y < 0 Then BetPosInsideBounds = False: Exit Function
+    If Y > 10 Then BetPosInsideBounds = False: Exit Function
+End Function
 
 Public Sub SETUPWINTABLE()
     Dim X&, Y&
@@ -311,20 +323,24 @@ Public Sub DRAWBets()
 
     ' HIGHLIGH MOUSE position OK
     If BetActive Then
-        If BetMouseX > TableX - FicheRadius Then
-            If BetMouseY > TableY - FicheRadius Then
-                If BetMouseX + FicheRadius < TableW + TableX Then
-                    If BetMouseY + FicheRadius < TableH + TableY Then
-                        If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
-                            CC.SetSourceRGBA 1, 1, 0, 0.6
-                            CC.Arc BetMouseX, BetMouseY, FicheRadius
-                            CC.Fill
-                            '                            CC.TextOut BetMouseX + 12, BetMouseY + 12, BetPosX & "," & BetPosY & "         " & WINTABLEMultiplier(BetPosX, BetPosY)
-                        End If
-                    End If
-                End If
+
+        If BetPosInsideBounds(BetPosX, BetPosY) Then
+            '        If BetMouseX > TableX - FicheRadius Then
+            '            If BetMouseY > TableY - FicheRadius Then
+            '                If BetMouseX + FicheRadius < TableW + TableX Then
+            '                    If BetMouseY + FicheRadius < TableH + TableY Then
+            If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
+                CC.SetSourceRGBA 1, 1, 0, 0.6
+                CC.Arc BetMouseX, BetMouseY, FicheRadius
+                CC.Fill
+                '                            CC.TextOut BetMouseX + 12, BetMouseY + 12, BetPosX & "," & BetPosY & "         " & WINTABLEMultiplier(BetPosX, BetPosY)
             End If
+            '                    End If
+            '                End If
+            '            End If
+            '        End If
         End If
+
     End If
 
 End Sub
@@ -408,8 +424,6 @@ Public Sub MANAGEBETS()
 
     fMain.txtWIN = ""
 
-
-
     For Y = 0 To 10
         For X = 3 To 30
             V = FichesBlaced(X, Y)
@@ -436,8 +450,11 @@ Public Sub MANAGEBETS()
                     If NumberExtracted = Val(S(I)) Then
                         WIN = V * WINTABLEMultiplier(X, Y)
                         BUDGET = BUDGET + WIN
-                        fMain.txtWIN = fMain.txtWIN & V & " x " & WINTABLEMultiplier(X, Y) & " = " & WIN & vbCrLf
+                        'fMain.txtWIN = fMain.txtWIN & V & " x " & WINTABLEMultiplier(X, Y) & " = " & WIN & vbCrLf
+                        fMain.txtWIN = V & " x " & WINTABLEMultiplier(X, Y) & " = " & WIN & vbCrLf & fMain.txtWIN
                         TOT = TOT + WIN
+                        fMain.txtWIN.Refresh
+                        AnimateFichesIN X, Y, WIN
                     End If
                 Next
             End If
@@ -447,6 +464,7 @@ Public Sub MANAGEBETS()
     fMain.txtWIN = "WIN: " & TOT & "(Total)" & vbCrLf & fMain.txtWIN
 
     fMain.txtWIN.Refresh
+    Sleep 1000
 
 End Sub
 
@@ -459,37 +477,94 @@ Private Sub AnimateFichesOUT(X&, Y&)
     Dim DX#, DY#
     Dim D#
 
-    FichesOutX = X
-    FichesOutY = Y
+    FichesOUTX = X
+    FichesOUTY = Y
 
-    DX = (X - 1) * 0.1
-    DY = (Y + 3) * 0.1
+    DX = (X - 15) * 0.1
+    DY = (Y + 1) * 0.1
 
     D = Sqr(DX * DX + DY * DY)
-    DX = 0.1 * DX / D
-    DY = 0.1 * DY / D
+    DX = 0.08 * DX / D
+    DY = 0.08 * DY / D
 
-    FichesOutAm = FichesBlaced(X, Y)
+    FichesOUTAm = FichesBlaced(X, Y)
     FichesBlaced(X, Y) = 0
 
-    FichesOutAnim = True
+    FichesOUTAnim = True
 
+    SOUNDSPLAYER.PlaySound "movement-swipe-whoosh-1-186575.mp3", 0, -1500
 
     For I = 0 To 5000
-        FichesOutX = FichesOutX - DX
-        FichesOutY = FichesOutY - DY
-        DX = DX * 1.8
-        DY = DY * 1.8
+        FichesOUTX = FichesOUTX - DX
+        FichesOUTY = FichesOUTY - DY
+        DX = DX * 1.9
+        DY = DY * 1.9
 
         DRAWALL
         Sleep 20
 
-        If FichesOutY < -FicheRadius Then Exit For
-        If FichesOutX < -FicheRadius Then Exit For
-
+        If FichesOUTY < -FicheRadius Then Exit For
+        If FichesOUTX < -FicheRadius Then Exit For
 
     Next
 
-    FichesOutAnim = False
+    FichesOUTAnim = False
 
 End Sub
+
+
+Private Sub AnimateFichesIN(X&, Y&, Amount As Long)
+    Dim XtoReach  As Double
+    Dim YtoReach  As Double
+    Dim DX#, DY#, D#
+    Dim I         As Long
+
+    FichesINX = 15
+    FichesINY = -1
+
+    FichesINAm = Amount
+
+    XtoReach = X
+    YtoReach = Y
+
+
+    DX = XtoReach - FichesINX
+    DY = YtoReach - FichesINY
+    D = Sqr(DX * DX + DY * DY)
+    DX = DX * 0.2
+    DY = DY * 0.2
+
+
+    FichesINAnim = True
+    SOUNDSPLAYER.PlaySound "correct-2-46134.mp3", 0, -1000
+    'SOUNDSPLAYER.PlaySound "item-pick-up-38258.mp3", 0, -1000
+
+
+    For I = 0 To 5000
+        FichesINX = FichesINX + DX
+        FichesINY = FichesINY + DY
+
+        If DX * DX + DY * DY > 0.05 Then
+            DX = DX * 0.8
+            DY = DY * 0.8
+        End If
+
+        DRAWALL
+        Sleep 20
+
+        D = (XtoReach - FichesINX) * (XtoReach - FichesINX) + _
+            (YtoReach - FichesINY) * (YtoReach - FichesINY)
+
+        If D < 0.05 Then Exit For
+
+    Next
+
+    FichesINAnim = False
+
+    FichesBlaced(X, Y) = Amount
+
+    DRAWALL
+    Sleep 400
+
+End Sub
+
