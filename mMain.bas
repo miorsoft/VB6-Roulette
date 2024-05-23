@@ -61,6 +61,7 @@ Public SOUNDSPLAYER As cSounds
 
 Public NumberExtracted As Long
 
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
@@ -91,6 +92,7 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
     fMain.PICpanel.Left = TableX
     fMain.PICpanel.Top = TableY + TableH
+    fMain.PICpanel.Width = TableW
 
 
 
@@ -182,7 +184,7 @@ Public Sub LAUNCH()
     NSPINS = NSPINS + 1
 
     'If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
-    If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Faites vos jeux.MP3", 0, 0, 2000
+    If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Faites vos jeux.MP3", 0, 0, 1000
 
 
     '-<<<<--------- WAIT BETS
@@ -266,7 +268,7 @@ Private Sub ShowResult()
     UPDATESTAT
 
 
-    MANAGEBETS
+
 
     If SoundMODE = 1 Then
         'SoundSLOT(N).PLAY
@@ -281,7 +283,7 @@ Private Sub ShowResult()
         End If
     End If
 
-
+    MANAGEBETS
 
 
 
@@ -400,6 +402,8 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
 
 
     DRAWBets
+
+    If FichesOutAnim Then DRAWfichesPilesAt FichesOutX, FichesOutY, FichesOutAm
 
 
 

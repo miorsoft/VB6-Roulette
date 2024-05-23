@@ -199,25 +199,25 @@ End Sub
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If BetActive Then
         If Button = 1 Then
-            If WINTABLE(BetPosX, BetPosY) <> 0 Then
-                If Budget > 0 Then
-                    FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) + 1
-                    Budget = Budget - 1
+            If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
+                If BUDGET > 0 Then
+                    FichesBlaced(BetPosX, BetPosY) = FichesBlaced(BetPosX, BetPosY) + 1
+                    BUDGET = BUDGET - 1
                 End If
             End If
 
         End If
 
         If Button = 2 Then
-            If FICHEScount(BetPosX, BetPosY) > 0 Then
-                FICHEScount(BetPosX, BetPosY) = FICHEScount(BetPosX, BetPosY) - 1
-                Budget = Budget + 1
+            If FichesBlaced(BetPosX, BetPosY) > 0 Then
+                FichesBlaced(BetPosX, BetPosY) = FichesBlaced(BetPosX, BetPosY) - 1
+                BUDGET = BUDGET + 1
             End If
         End If
 
     End If
 
-    fMain.lBudget = "Budget: " & Budget
+    fMain.lBudget = "Budget: " & BUDGET
 
 
 End Sub
