@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin VB.Form fMain 
    BackColor       =   &H00007000&
-   Caption         =   "Roulette"
+   Caption         =   "ROULETTE Game  By MiorSoft (reexre)"
    ClientHeight    =   11760
    ClientLeft      =   120
    ClientTop       =   465

@@ -378,10 +378,10 @@ Public Sub WHEELLOOP()
                 DoEvents
 
             Case t1sec
-                fMain.Caption = "  Computed FPS:" & TEMPO.Count(tCompute) & " DrawnFPS:" & TEMPO.Count(tDRAW)
+'                fMain.Caption = "  Computed FPS:" & TEMPO.Count(tCompute) & " DrawnFPS:" & TEMPO.Count(tDRAW)
                 TEMPO.ResetCount (tCompute)
                 TEMPO.ResetCount (tDRAW)
-                'TEMPO.ResetCount (t1sec)
+                TEMPO.ResetCount (t1sec)
         End Select
 
     Loop While True
