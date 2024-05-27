@@ -47,6 +47,10 @@ Public Const FicheRadius As Double = 12
 
 Public BUDGET     As Long
 
+Public TotalBet   As Long
+Public TotalWin   As Long
+
+
 Public Function BetPosInsideBounds(ByVal X&, ByVal Y&) As Boolean
     BetPosInsideBounds = True
     If X < 3 Then BetPosInsideBounds = False: Exit Function
@@ -306,8 +310,6 @@ Public Sub DRAWBets()
     Dim Y#
     Dim V&
 
-    Dim XX#, YY#, ZZ#
-
     CC.SelectFont "Arial", 12, vbBlack, True
 
     For Y = 0 To 10
@@ -418,11 +420,15 @@ Public Sub MANAGEBETS()
     Dim WIN       As Long
     Dim S()       As String
     Dim I&
-    Dim TOT       As Long
+
     Dim DoNOTWin  As Boolean
 
 
     fMain.txtWIN = ""
+    fMain.lWin = "WIN: 0"
+
+    TotalWin = 0
+
 
     For Y = 0 To 10
         For X = 3 To 30
@@ -452,7 +458,8 @@ Public Sub MANAGEBETS()
                         BUDGET = BUDGET + WIN
                         'fMain.txtWIN = fMain.txtWIN & V & " x " & WINTABLEMultiplier(X, Y) & " = " & WIN & vbCrLf
                         fMain.txtWIN = V & " x " & WINTABLEMultiplier(X, Y) & " = " & WIN & vbCrLf & fMain.txtWIN
-                        TOT = TOT + WIN
+                        TotalWin = TotalWin + WIN
+                        fMain.lWin = "WIN: " & TotalWin
                         fMain.txtWIN.Refresh
                         AnimateFichesIN X, Y, WIN
                     End If
@@ -461,7 +468,7 @@ Public Sub MANAGEBETS()
         Next
     Next
 
-    fMain.txtWIN = "WIN: " & TOT & " (Total)" & vbCrLf & fMain.txtWIN
+    fMain.txtWIN = "WIN: " & TotalWin & " (Total)" & vbCrLf & fMain.txtWIN
 
     fMain.txtWIN.Refresh
     Sleep 1000
@@ -492,7 +499,7 @@ Private Sub AnimateFichesOUT(X&, Y&)
 
     FichesOUTAnim = True
 
-    SOUNDSPLAYER.PlaySound "movement-swipe-whoosh-1-186575.mp3", 0, -1500
+    SOUNDSPLAYER.PlaySound "movement-swipe-whoosh-1-186575.MP3", 0, -1500
 
     For I = 0 To 5000
         FichesOUTX = FichesOUTX - DX
@@ -509,6 +516,7 @@ Private Sub AnimateFichesOUT(X&, Y&)
     Next
 
     FichesOUTAnim = False
+
 
 End Sub
 
@@ -536,8 +544,8 @@ Private Sub AnimateFichesIN(X&, Y&, Amount As Long)
 
 
     FichesINAnim = True
-    SOUNDSPLAYER.PlaySound "correct-2-46134.mp3", 0, -1000
-    'SOUNDSPLAYER.PlaySound "item-pick-up-38258.mp3", 0, -1000
+    SOUNDSPLAYER.PlaySound "correct-2-46134.MP3", 0, -1000
+    'SOUNDSPLAYER.PlaySound "item-pick-up-38258.MP3", 0, -1000
 
 
     For I = 0 To 5000
@@ -565,6 +573,7 @@ Private Sub AnimateFichesIN(X&, Y&, Amount As Long)
 
     DRAWALL
     Sleep 400
+    If TURBO Then ReDim FichesPlacedAt(30, 10)
 
 End Sub
 

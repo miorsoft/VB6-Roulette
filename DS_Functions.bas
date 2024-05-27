@@ -64,10 +64,10 @@ Private Declare Function memcpy Lib "kernel32" Alias "RtlMoveMemory" (ByRef Dest
 Private Declare Function SetFilePointerEx Lib "kernel32" (ByVal hFile As Long, ByVal liDistanceToMoveL As Long, ByVal liDistanceToMoveH As Long, ByRef lpNewFilePointer As LARGE_INTEGER, ByVal dwMoveMethod As Long) As Long
 Private Declare Function acmStreamClose Lib "msacm32" (ByVal has As Long, ByVal fdwClose As Long) As Long
 Private Declare Function acmStreamConvert Lib "msacm32" (ByVal has As Long, ByRef pash As ACMSTREAMHEADER, ByVal fdwConvert As Long) As Long
-Private Declare Function acmStreamMessage Lib "msacm32" (ByVal has As Long, ByVal uMsg As Long, ByVal lParam1 As Long, ByVal lParam2 As Long) As Long
+'Private Declare Function acmStreamMessage Lib "msacm32" (ByVal has As Long, ByVal uMsg As Long, ByVal lParam1 As Long, ByVal lParam2 As Long) As Long
 Private Declare Function acmStreamOpen Lib "msacm32" (phas As Any, ByVal had As Long, pwfxSrc As Any, pwfxDst As Any, pwfltr As Any, dwCallback As Any, dwInstance As Any, ByVal fdwOpen As Long) As Long
 Private Declare Function acmStreamPrepareHeader Lib "msacm32" (ByVal has As Long, ByRef pash As ACMSTREAMHEADER, ByVal fdwPrepare As Long) As Long
-Private Declare Function acmStreamReset Lib "msacm32" (ByVal has As Long, ByVal fdwReset As Long) As Long
+'Private Declare Function acmStreamReset Lib "msacm32" (ByVal has As Long, ByVal fdwReset As Long) As Long
 Private Declare Function acmStreamSize Lib "msacm32" (ByVal has As Long, ByVal cbInput As Long, ByRef pdwOutputBytes As Long, ByVal fdwSize As Long) As Long
 Private Declare Function acmStreamUnprepareHeader Lib "msacm32" (ByVal has As Long, ByRef pash As ACMSTREAMHEADER, ByVal fdwUnprepare As Long) As Long
 

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form fMain 
    BackColor       =   &H00007000&
    Caption         =   "ROULETTE Game  By MiorSoft (reexre)"
-   ClientHeight    =   11760
+   ClientHeight    =   12480
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   21720
@@ -16,7 +16,7 @@ Begin VB.Form fMain
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   784
+   ScaleHeight     =   832
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1448
    StartUpPosition =   1  'CenterOwner
@@ -92,6 +92,44 @@ Begin VB.Form fMain
          Top             =   480
          Width           =   1815
       End
+      Begin VB.Label lWin 
+         BackColor       =   &H00008000&
+         Caption         =   "Budget"
+         BeginProperty Font 
+            Name            =   "DejaVu Sans Mono"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00FFFFFF&
+         Height          =   375
+         Left            =   5160
+         TabIndex        =   11
+         Top             =   120
+         Width           =   1935
+      End
+      Begin VB.Label lBet 
+         BackColor       =   &H00008000&
+         Caption         =   "-"
+         BeginProperty Font 
+            Name            =   "DejaVu Sans Mono"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00FFFFFF&
+         Height          =   375
+         Left            =   2280
+         TabIndex        =   10
+         Top             =   120
+         Width           =   1935
+      End
       Begin VB.Label Label1 
          BackColor       =   &H00008000&
          Caption         =   " Sound"
@@ -128,7 +166,7 @@ Begin VB.Form fMain
          Left            =   120
          TabIndex        =   5
          Top             =   120
-         Width           =   1935
+         Width           =   2175
       End
    End
    Begin VB.CommandButton Command1 
@@ -137,7 +175,6 @@ Begin VB.Form fMain
       Left            =   6480
       TabIndex        =   3
       Top             =   9600
-      Visible         =   0   'False
       Width           =   1215
    End
    Begin VB.TextBox Text3 
@@ -271,7 +308,10 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As 
                     If BUDGET > 0 Then
                         FichesPlacedAt(BetPosX, BetPosY) = FichesPlacedAt(BetPosX, BetPosY) + 1
                         BUDGET = BUDGET - 1
-                        SOUNDSPLAYER.PlaySound "silver-quarter-4-44684.mp3", 0, -800
+                        TotalBet = TotalBet + 1
+                        '                        SOUNDSPLAYER.PlaySound "silver-quarter-4-44684.MP3", 0, -800
+                        SOUNDSPLAYER.PlaySound "silver-quarter.MP3", 0, -800
+
                     End If
                 End If
             End If
@@ -279,11 +319,12 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As 
             If Button = 2 Then
                 If FichesPlacedAt(BetPosX, BetPosY) > 0 Then
                     FichesPlacedAt(BetPosX, BetPosY) = FichesPlacedAt(BetPosX, BetPosY) - 1
+                    TotalBet = TotalBet - 1
                     BUDGET = BUDGET + 1
                 End If
             End If
         End If
-
+        fMain.lBet = "Bet: " & TotalBet
     End If
 
     fMain.lBudget = "Budget: " & BUDGET
@@ -342,7 +383,7 @@ Private Sub Command1_Click()
     W = tSRF.Width
     H = tSRF.Height
 
-    BORDER = H * 0.028             '0.025
+    BORDER = H * 0.05              '0.025
     CellX = W / 15.5
     CellY = (H - BORDER * 2) / 5
 
@@ -446,3 +487,6 @@ Private Sub Command1_Click()
     tSRF.WriteContentToPngFile App.Path & "\AmericanTable.png"
 End Sub
 
+Private Sub Label2_Click()
+
+End Sub

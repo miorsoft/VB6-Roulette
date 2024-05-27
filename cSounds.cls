@@ -15,8 +15,6 @@ Option Explicit
 
 'Raw / Not Elagant  use of DirectSound_Functions.bas to play multiple sounds....
 
-'(By theTrick?)
-
 Private Type tMyBuff
     Buffer        As IDirectSoundBuffer8
     FileName      As String
@@ -30,6 +28,7 @@ Private SoundsSET() As tMyBuff
 
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
+Private index     As Long
 
 Private Sub Class_Initialize()
     Dim desc      As DSBUFFERDESC
@@ -92,6 +91,48 @@ End Sub
 
 
 
+
+''Public Sub PlaySoundOLD2(S As String, Optional Pan As Long = 0, Optional Volume As Long = 0, Optional andSleep As Long = 0)
+''    Dim desc      As DSBUFFERDESC
+''    Dim I         As Long
+''    Dim CanExitSub As Long
+''
+''    desc.dwFlags = DSBCAPS_CTRLVOLUME Or DSBCAPS_CTRLPAN
+''
+''    For I = 0 To BUFFLEN
+''        With SoundsSET(I)
+''            If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
+''                If .FileName = S Then
+''                    .Buffer.SetPan Pan
+''                    .Buffer.SetVolume Volume
+''                    .Buffer.Play 0, 0, 0
+''                    CanExitSub = -1
+''                    Exit For
+''                End If
+''            End If
+''        End With
+''    Next
+''
+''    If CanExitSub Then Exit Sub
+''
+''    For I = 0 To BUFFLEN
+''        With SoundsSET(I)
+''            If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
+''                Set .Buffer = DSCreateSoundBufferFromFile(DirectSound, App.Path & "\Sounds\" & S, desc)
+''                .Buffer.SetPan Pan
+''                .Buffer.SetVolume Volume
+''                .Buffer.Play 0, 0, 0
+''                .FileName = S
+''                Exit For
+''            End If
+''        End With
+''    Next
+''
+''    If andSleep Then Sleep andSleep
+''
+''End Sub
+
+
 'Volume from 0 to -10000
 
 
@@ -99,39 +140,63 @@ Public Sub PlaySound(S As String, Optional Pan As Long = 0, Optional Volume As L
     Dim desc      As DSBUFFERDESC
     Dim I         As Long
     Dim CanExitSub As Long
+    Dim StatIndex As Long
 
     desc.dwFlags = DSBCAPS_CTRLVOLUME Or DSBCAPS_CTRLPAN
 
-    For I = 0 To BUFFLEN
-        With SoundsSET(I)
+
+    StatIndex = index
+
+
+    Do
+        With SoundsSET(index)
             If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
                 If .FileName = S Then
                     .Buffer.SetPan Pan
                     .Buffer.SetVolume Volume
                     .Buffer.Play 0, 0, 0
-                    CanExitSub = -1
-                    Exit For
+                    CanExitSub = -1    'for SLEEP
+                    Exit Do
                 End If
             End If
         End With
-    Next
+        index = index + 1: If index > BUFFLEN Then index = 0
+    Loop While index <> StatIndex
 
-    If CanExitSub Then Exit Sub
 
+    If Not (CanExitSub) Then
+        index = index + 1: If index > BUFFLEN Then index = 0
+        StatIndex = index
+        Do
+            With SoundsSET(index)
+                If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
+                    If .FileName <> S Then
+                        Set .Buffer = DSCreateSoundBufferFromFile(DirectSound, App.Path & "\Sounds\" & S, desc)
+
+                    Else
+                        '   '                                  index = index - 1: If index < 0 Then index = BUFFLEN
+                    End If
+                    .Buffer.SetPan Pan
+                    .Buffer.SetVolume Volume
+                    .Buffer.Play 0, 0, 0
+                    .FileName = S
+                    Exit Do
+                End If
+            End With
+            index = index + 1: If index > BUFFLEN Then index = 0
+        Loop While index <> StatIndex
+    End If
+
+
+    Dim ST$
     For I = 0 To BUFFLEN
-        With SoundsSET(I)
-            If .Buffer.GetStatus <> DSBSTATUS_PLAYING Then
-                Set .Buffer = DSCreateSoundBufferFromFile(DirectSound, App.Path & "\Sounds\" & S, desc)
-                .Buffer.SetPan Pan
-                .Buffer.SetVolume Volume
-                .Buffer.Play 0, 0, 0
-                .FileName = S
-                Exit For
-            End If
-        End With
+        ST = ST & Left$(SoundsSET(I).FileName, 5) & "|"
     Next
+Debug.Print ST
+Debug.Print Space$((index + 1) * 6 - 3) & "^"
 
-    If andSleep Then Sleep andSleep
+
+    If andSleep Then Sleep andSleep    '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 End Sub
 

@@ -40,7 +40,7 @@ Private Const PI2 As Double = 6.28318530717959
 Private Const PI  As Double = 3.14159265358979
 Public Const PIh  As Double = 1.5707963267949
 
-Private Declare Function GetTickCount Lib "kernel32" () As Long
+'Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 Private SLOTn(0 To 37) As Long
 Private STATFreq(0 To 37) As Long
@@ -63,6 +63,9 @@ Public NumberExtracted As Long
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
+
+Private Const WallSPEEDK As Double = 1    'PIh
+
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
 
@@ -78,14 +81,14 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     OuterRadius = WheelImageRadius - 14    '24
 
 
-''' Chenge external White with green
-With WheelSRF.CreateContext
-.SetSourceRGB 0, 0.5, 0: .Paint
-.Arc WheelImageRadius, WheelImageRadius, WheelImageRadius
-.Clip
-.Paint , Cairo.ImageList.AddImage("WHEEL", App.Path & "\RouletteWheel.png").CreateSurfacePattern
-End With
-'----------------------
+    ''' Chenge external White with green
+    With WheelSRF.CreateContext
+        .SetSourceRGB 0, 0.5, 0: .Paint
+        .Arc WheelImageRadius, WheelImageRadius, WheelImageRadius
+        .Clip
+        .Paint , Cairo.ImageList.AddImage("WHEEL", App.Path & "\RouletteWheel.png").CreateSurfacePattern
+    End With
+    '----------------------
 
 
 
@@ -99,12 +102,12 @@ End With
     TableX = WheelImageRadius * 2 + 20
     TableY = 0
 
-    TBO = TableH * 0.028           '0.025
+    TBO = TableH * 0.05            '0.025
     TcX = TableW / 15.5
     TcY = (TableH - TBO * 2) / 5
 
 
-    fMain.Text1.Left = TableX + TcX * 2 'CX * 2
+    fMain.Text1.Left = TableX + TcX * 2    'CX * 2
     fMain.Text2.Left = fMain.Text1.Width + fMain.Text1.Left + 5
     fMain.Text3.Left = fMain.Text2.Width + fMain.Text2.Left + 5
 
@@ -112,12 +115,21 @@ End With
     fMain.PICpanel.Left = TableX + TcX * 2
     fMain.PICpanel.Top = TableY + TableH
     fMain.PICpanel.Width = TableW - TcX * 3.5
-    
+
 
     fMain.chkTurbo.Left = fMain.PICpanel.Width - fMain.chkTurbo.Width - 5
     fMain.Label1.Left = fMain.PICpanel.Width - fMain.Label1.Width - 5
     fMain.cmbSound.Left = fMain.PICpanel.Width - fMain.cmbSound.Width - 5
 
+
+    fMain.lBudget.Width = fMain.PICpanel.Width / 4
+
+
+    fMain.lBet.Left = fMain.lBudget.Left + fMain.lBudget.Width
+    fMain.lBet.Width = fMain.lBudget.Width
+    fMain.lWin.Width = fMain.lBudget.Width
+
+    fMain.lWin.Left = fMain.lBet.Left + fMain.lBet.Width
 
 
     Set SRF = Cairo.CreateSurface(WheelImageRadius * 2 + 20 + TableSRF.Width, WheelImageRadius * 2 + 20, ImageSurface)
@@ -195,10 +207,13 @@ Public Sub LAUNCH()
     '    WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
     WheelANGSpeed = 0.2 + (Rnd * 2 - 1) * 0.05
 
+
+
     BallX = -0
     BallY = -(OuterRadius - R) + 4 + Rnd * 14
     '    BallVX = Rnd * 8
-    BallVX = (Rnd * 2 - 1) * 8
+    '    BallVX = (Rnd * 2 - 1) * 8
+    BallVX = (Rnd * 3 - 2) * 8
 
     BallVY = 0
 
@@ -209,6 +224,9 @@ Public Sub LAUNCH()
 
     'If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
     If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Faites vos jeux.MP3", 0, 0, 1000
+    TotalBet = 0
+    fMain.lBet = "Bet: 0"
+    fMain.lWin = "WIN: 0"
 
 
     '-<<<<--------- WAIT BETS
@@ -297,13 +315,13 @@ Private Sub ShowResult()
     If SoundMODE = 1 Then
         'SoundSLOT(N).PLAY
         Slot2MP3 N, S
-        SOUNDSPLAYER.PlaySound S & ".mp3"
+        SOUNDSPLAYER.PlaySound S & ".MP3"
 
     Else
         'If SoundMODE <> 0 Then PlayMP3 Slot2MP3(N, S)
         If SoundMODE <> 0 Then
             Slot2MP3 N, S
-            SOUNDSPLAYER.PlaySound S & ".mp3", , , 3000
+            SOUNDSPLAYER.PlaySound S & ".MP3", , , 3000
         End If
     End If
 
@@ -344,6 +362,9 @@ Public Sub WHEELLOOP()
 
     BallSTOPCount = 0
     CNT = 0
+
+
+
     Do
 
         Select Case TEMPO.WaitForNext
@@ -360,25 +381,25 @@ Public Sub WHEELLOOP()
 
 
                 CNT = CNT + 1
-                If Not (TURBO) Then
-                    If CNT > 450 Then
-                        CNT = -100000000#
-                        ' PlayMP3 App.Path & "\Sounds\Rien ne va plus.MP3"
-                        'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Rien ne va plus.MP3"
-                        If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Rien ne va plus.MP3"
+                ' If Not (TURBO) Then
+                If CNT > 450 Then
+                    CNT = -100000000#
+                    ' PlayMP3 App.Path & "\Sounds\Rien ne va plus.MP3"
+                    'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Rien ne va plus.MP3"
+                    If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Rien ne va plus.MP3"
 
-                        BetActive = False
+                    BetActive = False
 
 
-                    End If
                 End If
+                'End If
 
             Case tDRAW
                 DRAWALL
                 DoEvents
 
             Case t1sec
-'                fMain.Caption = "  Computed FPS:" & TEMPO.Count(tCompute) & " DrawnFPS:" & TEMPO.Count(tDRAW)
+                '                fMain.Caption = "  Computed FPS:" & TEMPO.Count(tCompute) & " DrawnFPS:" & TEMPO.Count(tDRAW)
                 TEMPO.ResetCount (tCompute)
                 TEMPO.ResetCount (tDRAW)
                 TEMPO.ResetCount (t1sec)
@@ -499,7 +520,7 @@ Public Sub SIMULATE()
 
     Dim DX#, DY#
 
-    Const WallSPEEDK As Double = 1    '0.002
+
 
     WheelANG = WheelANG + WheelANGSpeed
 
@@ -567,7 +588,7 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
 
     Dim rDIST#, rNX#, rNY#
     '    Dim rLX#, rLY#
-    Dim DX#, DY#
+
     Dim wVX#, wVY#
     Dim TVX#, TVY#
 
@@ -590,8 +611,8 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
             rNY = rNY / rDIST
 
 
-            wVX = -SA * DFC * WheelANGSpeed * 1#    '* 1.31
-            wVY = CA * DFC * WheelANGSpeed * 1#    '* 1.31
+            wVX = -SA * DFC * WheelANGSpeed * WallSPEEDK
+            wVY = CA * DFC * WheelANGSpeed * WallSPEEDK
 
             '            TVX = BallVX
             '            TVY = BallVY
@@ -662,9 +683,9 @@ Private Sub COLLISIONResponse(VX1, VY1, VX2, VY2, nDX, nDY)
         DY = parIy - parJy
         Volume = -7000 + Log(1 + (DX * DX + DY * DY) ^ 0.125) * 8000
         If Volume > -0 Then Volume = -0
-        If Volume > -4500 Then SOUNDSPLAYER.PlaySound "Ball.mp3", , Volume
+        If Volume > -4250 Then SOUNDSPLAYER.PlaySound "Ball.MP3", , Volume
 
-Debug.Print Volume
+        'Debug.Print Volume
     End If
 
 
@@ -679,8 +700,7 @@ Private Sub UPDATESTAT()
     Dim MAXALL    As Long
 
     fMain.Text2 = "Rounds:" & NSPINS & "  Frequencies   " & format$(100 / 38, "00.00") & vbCrLf & vbCrLf
-    fMain.Text3 = "Late Numbers:" & vbCrLf & vbCrLf & vbCrLf
-
+    fMain.Text3 = "Late Numbers:" & vbCrLf & vbCrLf
     For j = 1 To 38
         Max = -1000000000
         For I = 0 To 37
