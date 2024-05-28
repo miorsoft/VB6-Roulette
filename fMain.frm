@@ -20,6 +20,15 @@ Begin VB.Form fMain
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1448
    StartUpPosition =   1  'CenterOwner
+   Begin VB.CommandButton Command2 
+      Caption         =   "DrawWheel"
+      Height          =   495
+      Left            =   4320
+      TabIndex        =   12
+      Top             =   9600
+      Visible         =   0   'False
+      Width           =   1455
+   End
    Begin VB.PictureBox PICpanel 
       Appearance      =   0  'Flat
       BackColor       =   &H00008000&
@@ -172,7 +181,7 @@ Begin VB.Form fMain
    Begin VB.CommandButton Command1 
       Caption         =   "DrawTable"
       Height          =   495
-      Left            =   6480
+      Left            =   2880
       TabIndex        =   3
       Top             =   9600
       Visible         =   0   'False
@@ -265,6 +274,8 @@ Private Sub cmbSound_Click()
     SoundMODE = cmbSound.ListIndex
 End Sub
 
+
+
 Private Sub Form_Activate()
     SETUP True
 End Sub
@@ -301,7 +312,7 @@ End Sub
 
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If BetActive Then
-    
+
         If BetPosInsideBounds(BetPosX, BetPosY) Then
             If Button = 1 Then
 
@@ -488,6 +499,76 @@ Private Sub Command1_Click()
     tSRF.WriteContentToPngFile App.Path & "\AmericanTable.png"
 End Sub
 
-Private Sub Label2_Click()
+
+Private Sub Command2_Click()
+    'Draw wheel elements
+    Dim CX#, CY#
+    Dim tSRF      As cCairoSurface
+    Dim tCC       As cCairoContext
+    Dim Pat       As cCairoPattern
+
+    Dim I         As Long
+    Const SCALA   As Double = 1
+
+
+    Const FontName As String = "Times New Roman"
+    Const FontSize As Double = 28 * SCALA
+
+    SETUP
+
+    Set tSRF = Cairo.CreateSurface(611 * SCALA, 611 * SCALA, ImageSurface)
+    Set tCC = tSRF.CreateContext
+
+
+
+    CX = tSRF.Width * 0.5
+    CY = tSRF.Height * 0.5
+
+
+    With tCC
+
+        .SetSourceRGB 0, 0.5, 0: .Paint
+
+        '        .SetSourceRGB 0.98, 0.94, 0.23
+
+        Set Pat = Cairo.CreateRadialPattern(CX, CY, 600, CX * 1.5, CY * 1.5, 150)
+        Pat.AddColorStopRGBA 0, 1, 1, 0, 1
+        Pat.AddColorStopRGBA 1, 0.5, 0.5, 0, 1
+        .Arc CX, CY, CX - 1
+        .Fill , Pat
+
+        Set Pat = Cairo.CreateRadialPattern(CX, CY, 600, CX * 1.5, CY * 1.5, 150)
+        Pat.AddColorStopRGBA 0, 0.7, 0.2, 0.15, 1
+        Pat.AddColorStopRGBA 1, 0.5, 0.2, 0.15, 1
+        .Arc CX, CY, CX - 15
+        .Fill , Pat
+
+        Set Pat = Cairo.CreateRadialPattern(CX, CY, 600, CX * 1.5, CY * 1.5, 150)
+        Pat.AddColorStopRGBA 0, 1, 1, 0, 1
+        Pat.AddColorStopRGBA 1, 0.5, 0.5, 0, 1
+        .Arc CX, CY, CX - 60
+        .Fill , Pat
+
+
+        Set Pat = Cairo.CreateRadialPattern(CX, CY, 600, CX * 1.5, CY * 1.5, 150)
+        Pat.AddColorStopRGBA 0, 0.7, 0.2, 0.15, 1
+        Pat.AddColorStopRGBA 1, 0.5, 0.2, 0.15, 1
+        .Arc CX, CY, CX - 70
+        .Fill , Pat
+
+
+        .SetSourceColor 0
+        .Arc CX, CY, CX - 120
+        .Fill
+
+        .SetSourceRGB 110 / 255, 140 / 255, 65 / 255
+        .Arc CX, CY, CX - 130
+        .Fill
+
+
+    End With
+
+    tSRF.WriteContentToPngFile App.Path & "\MyAmericanWheel0.png"
+
 
 End Sub

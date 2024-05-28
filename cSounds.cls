@@ -136,7 +136,7 @@ End Sub
 'Volume from 0 to -10000
 
 
-Public Sub PlaySound(S As String, Optional Pan As Long = 0, Optional Volume As Long = 0, Optional andSleep As Long = 0)
+Friend Sub PlaySound(S As String, Optional Pan As Long = 0, Optional Volume As Long = 0, Optional andSleep As Long = 0)
     Dim desc      As DSBUFFERDESC
     Dim I         As Long
     Dim CanExitSub As Long

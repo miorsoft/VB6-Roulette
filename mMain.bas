@@ -31,10 +31,11 @@ Private BallX     As Double
 Private BallY     As Double
 Private BallVX    As Double
 Private BallVY    As Double
-Private Const R   As Double = 7    'BallRadius
+Private DistFromCenter As Double
 
-Private OuterRadius As Double
-Private Const InnerRadius As Double = 159
+Private Const BallRadius As Double = 8.25    '8  ' 7
+Private Const InnerRadius As Double = 150 + BallRadius    '159
+Private Const OuterRadius As Double = 293 - BallRadius
 
 Private Const PI2 As Double = 6.28318530717959
 Private Const PI  As Double = 3.14159265358979
@@ -64,7 +65,10 @@ Public NumberExtracted As Long
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 
-Private Const WallSPEEDK As Double = 1    'PIh
+Private Const WallSPEEDK As Double = 1
+
+Private SrfFlat   As cCairoSurface
+
 
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     Randomize Timer
@@ -78,7 +82,8 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     CX = WheelImageRadius + 10
     CY = WheelImageRadius + 10
 
-    OuterRadius = WheelImageRadius - 14    '24
+    '    OuterRadius = WheelImageRadius - 14    '24
+
 
 
     ''' Chenge external White with green
@@ -132,7 +137,7 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     fMain.lWin.Left = fMain.lBet.Left + fMain.lBet.Width
 
 
-    Set SRF = Cairo.CreateSurface(WheelImageRadius * 2 + 20 + TableSRF.Width, WheelImageRadius * 2 + 20, ImageSurface)
+    Set SRF = Cairo.CreateSurface(WheelImageRadius * 2 + 20 + TableSRF.Width, WheelImageRadius * 2 + 20 + 200, ImageSurface)
     Set CC = SRF.CreateContext
     CC.AntiAlias = CAIRO_ANTIALIAS_FAST
     CC.SetLineWidth 1
@@ -192,11 +197,9 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
     SETUPWINTABLE
 
 
+    SETUPFLAT
 
     If andLAUNCH Then LAUNCH
-
-
-
 
 
 End Sub
@@ -209,8 +212,8 @@ Public Sub LAUNCH()
 
 
 
-    BallX = -0
-    BallY = -(OuterRadius - R) + 4 + Rnd * 14
+    BallX = (Rnd * 2 - 1) * 3
+    BallY = -(OuterRadius - BallRadius) + 4 + Rnd * 14
     '    BallVX = Rnd * 8
     '    BallVX = (Rnd * 2 - 1) * 8
     BallVX = (Rnd * 3 - 2) * 8
@@ -339,7 +342,7 @@ End Sub
 Public Sub WHEELLOOP()
 
     If TURBO Then
-        ComputedFPS = 500          '400
+        ComputedFPS = 650          ' 500          '400
         DrawFPS = 6                '8
     Else
         ComputedFPS = 100
@@ -432,7 +435,7 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
 
     CC.Restore
 
-    CC.Arc BallX + CX, BallY + CY, R + 1
+    CC.Arc BallX + CX, BallY + CY, BallRadius    '+ 1
     CC.Fill True, Cairo.CreateSolidPatternLng(vbWhite)
     CC.SetSourceColor 0
     CC.Stroke
@@ -458,6 +461,18 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
 
 
 
+
+    '''    CC.RenderSurfaceContent SrfFlat, 5, WheelImageRadius * 2 + 20
+    '''    Dim X#, Y#
+    '''    Y = WheelImageRadius * 2 + 20
+    '''    Y = Y + 240 * (1 - DistFromCenter / WheelImageRadius)
+    '''    X = (-WheelANG + Atan2(BallX, BallY))
+    '''    While X < 0: X = X + PI2: Wend
+    '''    X = X / PI2 * 720
+    '''    CC.Arc X, Y, BallRadius * 0.78
+    '''    CC.Fill True, Cairo.CreateSolidPatternLng(vbWhite)
+    '''    CC.SetSourceColor 0
+    '''    CC.Stroke
 
 
 
@@ -515,7 +530,7 @@ End Sub
 
 Public Sub SIMULATE()
 
-    Dim DistFromCenter#
+
     Dim invDFC#
 
     Dim DX#, DY#
@@ -536,20 +551,17 @@ Public Sub SIMULATE()
     DY = BallY * invDFC
 
     If DistFromCenter < 183 Then   ' CHECK CHELL SLOT
-        CheckCOLLISIONwihtSLOTS DistFromCenter
+        CheckCOLLISIONwihtSLOTS
     End If
 
-    If DistFromCenter > (OuterRadius - R) Then    'Beyond OUTER Radius --->  Reflect Velocity
-
+    If DistFromCenter > OuterRadius Then    'Beyond OUTER Radius --->  Reflect Velocity
         COLLISIONResponse BallVX, BallVY, -DY * DistFromCenter * WallSPEEDK * WheelANGSpeed, DX * DistFromCenter * WallSPEEDK * WheelANGSpeed, DX, DY
-        DistFromCenter = (OuterRadius - R)
+        DistFromCenter = OuterRadius
         BallX = DX * DistFromCenter
         BallY = DY * DistFromCenter
     End If
 
     If DistFromCenter < InnerRadius Then    'Beyond INNER Radius --->  Reflect Velocity
-
-
         COLLISIONResponse BallVX, BallVY, -DY * DistFromCenter * WallSPEEDK * WheelANGSpeed, DX * DistFromCenter * WallSPEEDK * WheelANGSpeed, -DX, -DY
         DistFromCenter = InnerRadius
         BallX = DX * DistFromCenter
@@ -579,40 +591,40 @@ End Sub
 
 
 
-Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
+Private Sub CheckCOLLISIONwihtSLOTS()
     Dim A         As Double
     Dim CA#, SA#
     Dim Penetration#
-    Const InvLineLengthSquared As Double = 0.0016    '1 / (25 * 25)  '175-150
+    '    Const InvLineLengthSquared As Double = 0.0016    '1 / (25 * 25)  '175-150
     Const angSTeP As Double = 0.165346981767884    ' 2 PI / 38
+    Const SlotThick As Double = 1.8
+    Const rIN     As Double = 150
+    Const rOUT    As Double = 173.5    '175
+    Const InvLineLengthSquared As Double = 1 / ((rOUT - rIN) * (rOUT - rIN))
+
 
     Dim rDIST#, rNX#, rNY#
-    '    Dim rLX#, rLY#
 
     Dim wVX#, wVY#
     Dim TVX#, TVY#
 
-    'Dim BALLA As Double
-    'BALLA = Atan2(BallX, BallY)
-
-
-    For A = -0.07 To PI2 Step angSTeP
+    '    For A = -0.07 To PI2 Step angSTeP
+    For A = -0.065 To PI2 Step angSTeP
 
         CA = Cos(A + WheelANG)
         SA = Sin(A + WheelANG)
 
         '        CalcDistFromLineAndNormal BallX + BallVX, BallY + BallVY, CA * 150, SA * 150, CA * 175, SA * 175, InvLineLengthSquared, rDIST, rNX, rNY ', rLX, rLY
-        CalcDistFromLineAndNormal BallX, BallY, CA * 150, SA * 150, CA * 175, SA * 175, InvLineLengthSquared, rDIST, rNX, rNY    ', rLX, rLY
+        CalcDistFromLineAndNormal BallX, BallY, CA * rIN, SA * rIN, CA * rOUT, SA * rOUT, InvLineLengthSquared, rDIST, rNX, rNY    ', rLX, rLY
         '
-        If rDIST < R + 3 Then      '4
-
+        If rDIST < (BallRadius + SlotThick) Then
 
             rNX = rNX / rDIST
             rNY = rNY / rDIST
 
 
-            wVX = -SA * DFC * WheelANGSpeed * WallSPEEDK
-            wVY = CA * DFC * WheelANGSpeed * WallSPEEDK
+            wVX = -SA * DistFromCenter * WheelANGSpeed * WallSPEEDK
+            wVY = CA * DistFromCenter * WheelANGSpeed * WallSPEEDK
 
             '            TVX = BallVX
             '            TVY = BallVY
@@ -623,9 +635,9 @@ Private Sub CheckCOLLISIONwihtSLOTS(DFC#)
             '            BallX = BallX - TVX
             '            BallY = BallY - TVY
 
-            Penetration = ((R + 3) - rDIST)
-            BallX = BallX + rNX * Penetration    ' * 2
-            BallY = BallY + rNY * Penetration    ' * 2
+            Penetration = ((BallRadius + SlotThick) - rDIST)
+            BallX = BallX + rNX * Penetration
+            BallY = BallY + rNY * Penetration
 
             '1 Step forward
             BallX = BallX + BallVX
@@ -755,6 +767,50 @@ Private Sub UPDATESTAT()
 
     fMain.Refresh
     DRAWALL
+
+
+End Sub
+
+Private Sub SETUPFLAT()
+    Dim BW()      As Long
+    Dim BF()      As Long
+    Dim X#, Y#
+    Dim A#
+    Dim R#
+    Dim ASt#
+
+    Set SrfFlat = Cairo.CreateSurface(720, 241, ImageSurface)
+
+    SrfFlat.BindToArrayLong BF
+    WheelSRF.BindToArrayLong BW
+
+    ASt = PI2 / 720
+
+    'For A = 0# To PI2 Step PI2 / 699
+    For A = 0.05 To PI2 + 0.05 - ASt Step ASt
+        Y = 0
+        For R = WheelImageRadius - 0.5 To 0 Step -1
+            BF(X, Y) = BW(WheelImageRadius + Cos(A) * R, WheelImageRadius + Sin(A) * R)
+            Y = Y + 240 / WheelImageRadius
+        Next
+        X = X + 1
+    Next
+
+
+    '    For Y = 0 To 240
+    '        R = 240 - Y / 241 * WheelImageRadius
+    '        For X = 0 To 719
+    '            A = X / 720 * PI2
+    '            BF(X, Y) = BW(WheelImageRadius + Cos(A) * R, WheelImageRadius + Sin(A) * R)
+    '        Next
+    '    Next
+
+
+
+
+
+    SrfFlat.ReleaseArrayLong BF
+    WheelSRF.ReleaseArrayLong BW
 
 
 End Sub

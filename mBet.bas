@@ -281,7 +281,7 @@ Public Sub BET()
         DRAWALL True
         Sleep 20
 
-        If Timer > T + 10 Then Exit Do    '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        If Timer > T + 9 Then Exit Do    '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     Loop While BetActive
 
 End Sub
