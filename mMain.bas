@@ -227,7 +227,7 @@ Public Sub LAUNCH()
     TotalBet = 0
     fMain.lBet = "Bet: 0"
     fMain.lWin = "WIN: 0"
-
+    fMain.lBudget = "Budget: " & BUDGET
 
     '-<<<<--------- WAIT BETS
     If Not (TURBO) Then BET

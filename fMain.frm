@@ -175,6 +175,7 @@ Begin VB.Form fMain
       Left            =   6480
       TabIndex        =   3
       Top             =   9600
+      Visible         =   0   'False
       Width           =   1215
    End
    Begin VB.TextBox Text3 
@@ -300,7 +301,7 @@ End Sub
 
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If BetActive Then
-
+    
         If BetPosInsideBounds(BetPosX, BetPosY) Then
             If Button = 1 Then
 
