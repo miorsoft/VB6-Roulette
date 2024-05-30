@@ -14,29 +14,28 @@ Public BetActive  As Boolean
 Public FichesOUTAnim As Boolean
 Public FichesOUTX As Double
 Public FichesOUTY As Double
-Public FichesOUTAm As Long
-
+Public FichesOUTAmount As Long
 
 Public FichesINAnim As Boolean
 Public FichesINX  As Double
 Public FichesINY  As Double
-Public FichesINAm As Long
+Public FichesINAmount As Long
 
 
 Public TableW     As Double
 Attribute TableW.VB_VarUserMemId = 1073741827
 Public TableH     As Double
 Attribute TableH.VB_VarUserMemId = 1073741828
-Public TableX     As Double
-Attribute TableX.VB_VarUserMemId = 1073741829
-Public TableY     As Double
-Attribute TableY.VB_VarUserMemId = 1073741830
-Public TBO        As Double
-Attribute TBO.VB_VarUserMemId = 1073741831
-Public TcX        As Double
-Attribute TcX.VB_VarUserMemId = 1073741832
-Public TcY        As Double
-Attribute TcY.VB_VarUserMemId = 1073741833
+Public TableScreenX As Double
+Attribute TableScreenX.VB_VarUserMemId = 1073741829
+Public TableScreenY As Double
+Attribute TableScreenY.VB_VarUserMemId = 1073741830
+Public TableTopBorder As Double
+Attribute TableTopBorder.VB_VarUserMemId = 1073741831
+Public TableCellW As Double
+Attribute TableCellW.VB_VarUserMemId = 1073741832
+Public TableCellH As Double
+Attribute TableCellH.VB_VarUserMemId = 1073741833
 
 Public FichesPlacedAt() As Double
 Public WINTABLEMultiplier() As Double
@@ -290,8 +289,8 @@ End Sub
 
 Public Sub DRAWfichesPilesAt(X#, Y#, Amount As Long)
     Dim XX#, YY#, ZZ#
-    XX = TableX + X * TcX * 0.5
-    YY = TableY + TBO + Y * TcY * 0.5
+    XX = TableScreenX + X * TableCellW * 0.5
+    YY = TableScreenY + TableTopBorder + Y * TableCellH * 0.5
 
     For ZZ = 0 To Amount - 1
         'vbCyan
@@ -322,27 +321,17 @@ Public Sub DRAWBets()
     Next
 
 
-
     ' HIGHLIGH MOUSE position OK
     If BetActive Then
-
         If BetPosInsideBounds(BetPosX, BetPosY) Then
-            '        If BetMouseX > TableX - FicheRadius Then
-            '            If BetMouseY > TableY - FicheRadius Then
-            '                If BetMouseX + FicheRadius < TableW + TableX Then
-            '                    If BetMouseY + FicheRadius < TableH + TableY Then
             If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
                 CC.SetSourceRGBA 1, 1, 0, 0.6
                 CC.Arc BetMouseX, BetMouseY, FicheRadius
                 CC.Fill
-                '                            CC.TextOut BetMouseX + 12, BetMouseY + 12, BetPosX & "," & BetPosY & "         " & WINTABLEMultiplier(BetPosX, BetPosY)
+                'CC.TextOut BetMouseX + 12, BetMouseY + 12, BetPosX & "," & BetPosY & "         " & WINTABLEMultiplier(BetPosX, BetPosY)
+                'CC.TextOut BetMouseX, BetMouseY + 24, "X " & WINTABLEMultiplier(BetPosX, BetPosY)
             End If
-            '                    End If
-            '                End If
-            '            End If
-            '        End If
         End If
-
     End If
 
 End Sub
@@ -355,25 +344,25 @@ Private Sub HIlight(S As String)
     N = Val(S)
 
     If N > 0 Then
-        X = TableX + TcX * (2 + ((N - 1) \ 3))
-        Y = TableY + TBO + TcY * 2 - TcY * ((N - 1) Mod 3)
+        X = TableScreenX + TableCellW * (2 + ((N - 1) \ 3))
+        Y = TableScreenY + TableTopBorder + TableCellH * 2 - TableCellH * ((N - 1) Mod 3)
 
         CC.SetSourceRGBA 1, 1, 0, 0.25
-        CC.Rectangle X, Y, TcX, TcY
+        CC.Rectangle X, Y, TableCellW, TableCellH
         CC.Fill
     Else
 
-        If N = 0 Then
-            X = TableX + TcX * 1
-            Y = TableY + TBO + TcY * 1.5
+        If N = 0 Then              ' ZERO
+            X = TableScreenX + TableCellW * 1
+            Y = TableScreenY + TableTopBorder + TableCellH * 1.5
             CC.SetSourceRGBA 1, 1, 0, 0.25
-            CC.Rectangle X, Y, TcX, TcY * 1.5
+            CC.Rectangle X, Y, TableCellW, TableCellH * 1.5
             CC.Fill
-        Else                       '    -1          '00
-            X = TableX + TcX * 1
-            Y = TableY + TBO
+        Else                       '    -1    DOBLE ZERO
+            X = TableScreenX + TableCellW * 1
+            Y = TableScreenY + TableTopBorder
             CC.SetSourceRGBA 1, 1, 0, 0.25
-            CC.Rectangle X, Y, TcX, TcY * 1.5
+            CC.Rectangle X, Y, TableCellW, TableCellH * 1.5
             CC.Fill
         End If
     End If
@@ -396,18 +385,12 @@ Public Sub HILightBET()
         Next
     Next
 
-    If BetMouseX > TableX - FicheRadius Then
-        If BetMouseY > TableY - FicheRadius Then
-            If BetMouseX + FicheRadius < TableW + TableX Then
-                If BetMouseY + FicheRadius < TableH + TableY Then
-                    If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
-                        S = Split(WINTABLENumbersList(BetPosX, BetPosY), ",")
-                        For I = 0 To UBound(S)
-                            HIlight S(I)
-                        Next
-                    End If
-                End If
-            End If
+    If BetPosInsideBounds(BetPosX, BetPosY) Then
+        If WINTABLEMultiplier(BetPosX, BetPosY) <> 0 Then
+            S = Split(WINTABLENumbersList(BetPosX, BetPosY), ",")
+            For I = 0 To UBound(S)
+                HIlight S(I)
+            Next
         End If
     End If
 
@@ -488,13 +471,14 @@ Private Sub AnimateFichesOUT(X&, Y&)
     FichesOUTY = Y
 
     DX = (X - 15) * 0.1
-    DY = (Y + 1) * 0.1
+    '    DY = (Y + 1) * 0.1
+    DY = (Y + 4) * 0.1
 
     D = Sqr(DX * DX + DY * DY)
-    DX = 0.08 * DX / D
-    DY = 0.08 * DY / D
+    DX = DX / D * 0.08
+    DY = DY / D * 0.08
 
-    FichesOUTAm = FichesPlacedAt(X, Y)
+    FichesOUTAmount = FichesPlacedAt(X, Y)
     FichesPlacedAt(X, Y) = 0
 
     FichesOUTAnim = True
@@ -530,7 +514,7 @@ Private Sub AnimateFichesIN(X&, Y&, Amount As Long)
     FichesINX = 15
     FichesINY = -1
 
-    FichesINAm = Amount
+    FichesINAmount = Amount
 
     XtoReach = X
     YtoReach = Y

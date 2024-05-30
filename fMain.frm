@@ -296,13 +296,13 @@ End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If BetActive Then
-        X = X - TableX
-        BetPosX = Round(X / TcX * 2)
-        X = BetPosX * TcX * 0.5 + TableX
+        X = X - TableScreenX
+        BetPosX = Round(X / TableCellW * 2)
+        X = BetPosX * TableCellW * 0.5 + TableScreenX
 
-        Y = Y - TableY - TBO
-        BetPosY = Round(Y / TcY * 2)
-        Y = BetPosY * TcY * 0.5 + TableY + TBO
+        Y = Y - TableScreenY - TableTopBorder
+        BetPosY = Round(Y / TableCellH * 2)
+        Y = BetPosY * TableCellH * 0.5 + TableScreenY + TableTopBorder
 
         BetMouseX = X
         BetMouseY = Y

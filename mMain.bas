@@ -7,8 +7,8 @@ Private TableSRF  As cCairoSurface
 
 Public CC         As cCairoContext
 
-Private CX        As Double
-Private CY        As Double
+Private WheelScreenCenterX As Double
+Private WheelScreenCenterY As Double
 
 Private WheelImageRadius As Double
 
@@ -43,16 +43,16 @@ Public Const PIh  As Double = 1.5707963267949
 
 'Private Declare Function GetTickCount Lib "kernel32" () As Long
 
-Private SLOTn(0 To 37) As Long
+Private SLOTN(0 To 37) As Long
 Private STATFreq(0 To 37) As Long
-Private STATRita(0 To 37) As Long
+Private STATLate(0 To 37) As Long
 
-Public NSPINS     As Long
+Public ROUNDS     As Long
 
 Public TURBO      As Boolean
 Public SoundMODE  As Long
 
-Private BallSTOPCount As Long
+Private BallIsSTILLCount As Long
 
 Private CNT       As Long
 
@@ -79,8 +79,8 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
 
     WheelImageRadius = WheelSRF.Width * 0.5
-    CX = WheelImageRadius + 10
-    CY = WheelImageRadius + 10
+    WheelScreenCenterX = WheelImageRadius + 10
+    WheelScreenCenterY = WheelImageRadius + 10
 
     '    OuterRadius = WheelImageRadius - 14    '24
 
@@ -104,22 +104,22 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
     TableW = TableSRF.Width
     TableH = TableSRF.Height
-    TableX = WheelImageRadius * 2 + 20
-    TableY = 0
+    TableScreenX = WheelImageRadius * 2 + 20
+    TableScreenY = 0
 
-    TBO = TableH * 0.05            '0.025
-    TcX = TableW / 15.5
-    TcY = (TableH - TBO * 2) / 5
+    TableTopBorder = TableH * 0.05    '0.025
+    TableCellW = TableW / 15.5
+    TableCellH = (TableH - TableTopBorder * 2) / 5
 
 
-    fMain.Text1.Left = TableX + TcX * 2    'CX * 2
+    fMain.Text1.Left = TableScreenX + TableCellW * 2    'WheelScreenCenterX * 2
     fMain.Text2.Left = fMain.Text1.Width + fMain.Text1.Left + 5
     fMain.Text3.Left = fMain.Text2.Width + fMain.Text2.Left + 5
 
 
-    fMain.PICpanel.Left = TableX + TcX * 2
-    fMain.PICpanel.Top = TableY + TableH
-    fMain.PICpanel.Width = TableW - TcX * 3.5
+    fMain.PICpanel.Left = TableScreenX + TableCellW * 2
+    fMain.PICpanel.Top = TableScreenY + TableH
+    fMain.PICpanel.Width = TableW - TableCellW * 3.5
 
 
     fMain.chkTurbo.Left = fMain.PICpanel.Width - fMain.chkTurbo.Width - 5
@@ -147,11 +147,11 @@ Public Sub SETUP(Optional andLAUNCH As Boolean = False)
 
 
 
-    SLOTn(0) = 33: SLOTn(1) = 7: SLOTn(2) = 17: SLOTn(3) = 5: SLOTn(4) = 22: SLOTn(5) = 34: SLOTn(6) = 15: SLOTn(7) = 3
-    SLOTn(8) = 24: SLOTn(9) = 36: SLOTn(10) = 13: SLOTn(11) = 1: SLOTn(12) = -1: SLOTn(13) = 27: SLOTn(14) = 10: SLOTn(15) = 25
-    SLOTn(16) = 29: SLOTn(17) = 12: SLOTn(18) = 8: SLOTn(19) = 19: SLOTn(20) = 31: SLOTn(21) = 18: SLOTn(22) = 6: SLOTn(23) = 21
-    SLOTn(24) = 26: SLOTn(25) = 16: SLOTn(26) = 4: SLOTn(27) = 23: SLOTn(28) = 35: SLOTn(29) = 14: SLOTn(30) = 2: SLOTn(31) = 0
-    SLOTn(32) = 20: SLOTn(33) = 9: SLOTn(34) = 28: SLOTn(35) = 32: SLOTn(36) = 11: SLOTn(37) = 30
+    SLOTN(0) = 33: SLOTN(1) = 7: SLOTN(2) = 17: SLOTN(3) = 5: SLOTN(4) = 22: SLOTN(5) = 34: SLOTN(6) = 15: SLOTN(7) = 3
+    SLOTN(8) = 24: SLOTN(9) = 36: SLOTN(10) = 13: SLOTN(11) = 1: SLOTN(12) = -1: SLOTN(13) = 27: SLOTN(14) = 10: SLOTN(15) = 25
+    SLOTN(16) = 29: SLOTN(17) = 12: SLOTN(18) = 8: SLOTN(19) = 19: SLOTN(20) = 31: SLOTN(21) = 18: SLOTN(22) = 6: SLOTN(23) = 21
+    SLOTN(24) = 26: SLOTN(25) = 16: SLOTN(26) = 4: SLOTN(27) = 23: SLOTN(28) = 35: SLOTN(29) = 14: SLOTN(30) = 2: SLOTN(31) = 0
+    SLOTN(32) = 20: SLOTN(33) = 9: SLOTN(34) = 28: SLOTN(35) = 32: SLOTN(36) = 11: SLOTN(37) = 30
 
 
 
@@ -223,7 +223,7 @@ Public Sub LAUNCH()
     While WheelANG > PI2: WheelANG = WheelANG - PI2: Wend
 
 
-    NSPINS = NSPINS + 1
+    ROUNDS = ROUNDS + 1
 
     'If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
     If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Faites vos jeux.MP3", 0, 0, 1000
@@ -245,7 +245,7 @@ Public Sub LAUNCH()
 End Sub
 Public Function Slot2Number(Slot As Long, Optional JustNumber As Boolean = False) As String
     Dim Result&
-    Result = SLOTn(Slot)
+    Result = SLOTN(Slot)
     If Result < 0 Then Slot2Number = "00" Else: Slot2Number = CStr(Result)
     If Len(Slot2Number) = 1 Then Slot2Number = " " & Slot2Number
 
@@ -261,19 +261,17 @@ Public Function Slot2Number(Slot As Long, Optional JustNumber As Boolean = False
 End Function
 Public Function Slot2MP3(Slot As Long, ByRef ToSpeak As String) As String
 
-
     ToSpeak = Slot2Number(Slot)
     ToSpeak = Left$(ToSpeak, 8) & " " & Replace(Right$(ToSpeak, Len(ToSpeak) - 8), " ", ".")
     If Left$(ToSpeak, 2) = "00" Then ToSpeak = "doubler 0"
     Slot2MP3 = App.Path & "\Sounds\" & ToSpeak & ".MP3"
-
 
 End Function
 
 Public Function Number2Slot(N As Long) As Long
     Dim I         As Long
     For I = 0 To 37
-        If SLOTn(I) = N Then
+        If SLOTN(I) = N Then
             Number2Slot = I
             Exit For
         End If
@@ -283,7 +281,6 @@ End Function
 
 Private Sub ShowResult()
     Dim N         As Long
-
     Dim S         As String
     Dim I&
 
@@ -294,13 +291,13 @@ Private Sub ShowResult()
     STATFreq(N) = STATFreq(N) + 1
 
     For I = 0 To 37
-        STATRita(I) = STATRita(I) + 1
+        STATLate(I) = STATLate(I) + 1
     Next
-    STATRita(N) = 0
+    STATLate(N) = 0
 
 
 
-    NumberExtracted = SLOTn(N)
+    NumberExtracted = SLOTN(N)
 
     S = Slot2Number(N)
     S = S & "  (" & STATFreq(N) & ")"
@@ -363,7 +360,7 @@ Public Sub WHEELLOOP()
     '        t1sec = TEMPO.Add(1)
     '    End If
 
-    BallSTOPCount = 0
+    BallIsSTILLCount = 0
     CNT = 0
 
 
@@ -376,12 +373,9 @@ Public Sub WHEELLOOP()
 
                 SIMULATE
 
-                If WheelANGSpeed < 0 Then
-                    '                    Exit Do
-                    WheelANGSpeed = 0
-                End If
-                If BallSTOPCount > 50 Then Exit Do
+                If WheelANGSpeed < 0 Then WheelANGSpeed = 0
 
+                If BallIsSTILLCount > 50 Then Exit Do
 
                 CNT = CNT + 1
                 ' If Not (TURBO) Then
@@ -392,8 +386,6 @@ Public Sub WHEELLOOP()
                     If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Rien ne va plus.MP3"
 
                     BetActive = False
-
-
                 End If
                 'End If
 
@@ -419,7 +411,7 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
     '   CC.SetSourceColor vbWhite: CC.Paint
 
     CC.Save
-    CC.TranslateDrawings CX, CY
+    CC.TranslateDrawings WheelScreenCenterX, WheelScreenCenterY
     CC.RotateDrawings WheelANG
     CC.RenderSurfaceContent WheelSRF, -WheelImageRadius, -WheelImageRadius
 
@@ -435,25 +427,22 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
 
     CC.Restore
 
-    CC.Arc BallX + CX, BallY + CY, BallRadius    '+ 1
+    CC.Arc BallX + WheelScreenCenterX, BallY + WheelScreenCenterY, BallRadius    '+ 1
     CC.Fill True, Cairo.CreateSolidPatternLng(vbWhite)
     CC.SetSourceColor 0
     CC.Stroke
 
 
 
-    CC.RenderSurfaceContent TableSRF, TableX, TableY
-
-
-
+    CC.RenderSurfaceContent TableSRF, TableScreenX, TableScreenY
 
 
 
     DRAWBets
 
-    If FichesOUTAnim Then DRAWfichesPilesAt FichesOUTX, FichesOUTY, FichesOUTAm
+    If FichesOUTAnim Then DRAWfichesPilesAt FichesOUTX, FichesOUTY, FichesOUTAmount
 
-    If FichesINAnim Then DRAWfichesPilesAt FichesINX, FichesINY, FichesINAm
+    If FichesINAnim Then DRAWfichesPilesAt FichesINX, FichesINY, FichesINAmount
 
 
 
@@ -488,11 +477,11 @@ End Sub
 '    X = X - WallX * D * 2
 '    Y = Y - WallY * D * 2
 'End Sub
-Private Sub Project(X#, Y#, ByVal v2X#, ByVal v2Y#)
+Private Sub Project(X#, Y#, ByVal NX#, ByVal NY#)
     Dim D         As Double
-    D = X * v2X + Y * v2Y
-    X = v2X * D
-    Y = v2Y * D
+    D = X * NX + Y * NY
+    X = NX * D
+    Y = NY * D
 End Sub
 
 
@@ -501,7 +490,7 @@ Public Function Atan2(ByVal DX As Double, ByVal DY As Double) As Double
 End Function
 
 
-Private Sub CalcDistFromLineAndNormal(ByVal PX#, ByVal PY#, ByVal AX#, ByVal AY#, ByVal BX#, ByVal BY#, ByVal InvABlen2#, rDIST#, rNX#, rNY#)    ', rPosX#, rPosY#)
+Private Sub CalcDistFromLineAndNormal2(ByVal PX#, ByVal PY#, ByVal AX#, ByVal AY#, ByVal BX#, ByVal BY#, ByVal InvABlen2#, rDIST#, rNX#, rNY#)    ', rPosX#, rPosY#)
     Dim PAX#, PAY#, H#
     Dim bAX#, bAY#
     Dim DX#, DY#
@@ -517,14 +506,10 @@ Private Sub CalcDistFromLineAndNormal(ByVal PX#, ByVal PY#, ByVal AX#, ByVal AY#
 
     DX = PAX - bAX * H
     DY = PAY - bAY * H
-
-    rDIST = Sqr(DX * DX + DY * DY)
+    rDIST = (DX * DX + DY * DY)    ' Will be SQR Later
 
     rNX = DX                       ' / rDIST 'Will be normalized later
     rNY = DY                       ' / rDIST
-    '    rPosX = AX + bAX * H
-    '    rPosY = AY + bAY * H
-
 End Sub
 
 
@@ -582,9 +567,7 @@ Public Sub SIMULATE()
     BallY = BallY + BallVY
 
 
-    If (BallVX * BallVX + BallVY * BallVY) < 0.01 Then BallSTOPCount = BallSTOPCount + 1 Else: BallSTOPCount = 0
-
-
+    If (BallVX * BallVX + BallVY * BallVY) < 0.01 Then BallIsSTILLCount = BallIsSTILLCount + 1 Else: BallIsSTILLCount = 0
 
 
 End Sub
@@ -595,18 +578,18 @@ Private Sub CheckCOLLISIONwihtSLOTS()
     Dim A         As Double
     Dim CA#, SA#
     Dim Penetration#
-    '    Const InvLineLengthSquared As Double = 0.0016    '1 / (25 * 25)  '175-150
     Const angSTeP As Double = 0.165346981767884    ' 2 PI / 38
     Const SlotThick As Double = 1.8
     Const rIN     As Double = 150
     Const rOUT    As Double = 173.5    '175
     Const InvLineLengthSquared As Double = 1 / ((rOUT - rIN) * (rOUT - rIN))
 
+    Const MinDist As Double = (BallRadius + SlotThick)
+    Const MinDist2 As Double = MinDist * MinDist
 
-    Dim rDIST#, rNX#, rNY#
+    Dim RetDIST#, rNX#, rNY#
 
     Dim wVX#, wVY#
-    Dim TVX#, TVY#
 
     '    For A = -0.07 To PI2 Step angSTeP
     For A = -0.065 To PI2 Step angSTeP
@@ -614,28 +597,21 @@ Private Sub CheckCOLLISIONwihtSLOTS()
         CA = Cos(A + WheelANG)
         SA = Sin(A + WheelANG)
 
-        '        CalcDistFromLineAndNormal BallX + BallVX, BallY + BallVY, CA * 150, SA * 150, CA * 175, SA * 175, InvLineLengthSquared, rDIST, rNX, rNY ', rLX, rLY
-        CalcDistFromLineAndNormal BallX, BallY, CA * rIN, SA * rIN, CA * rOUT, SA * rOUT, InvLineLengthSquared, rDIST, rNX, rNY    ', rLX, rLY
+        CalcDistFromLineAndNormal2 BallX, BallY, CA * rIN, SA * rIN, CA * rOUT, SA * rOUT, InvLineLengthSquared, RetDIST, rNX, rNY
         '
-        If rDIST < (BallRadius + SlotThick) Then
-
-            rNX = rNX / rDIST
-            rNY = rNY / rDIST
-
+        If RetDIST < MinDist2 Then
+            RetDIST = Sqr(RetDIST)
+            rNX = rNX / RetDIST
+            rNY = rNY / RetDIST
 
             wVX = -SA * DistFromCenter * WheelANGSpeed * WallSPEEDK
             wVY = CA * DistFromCenter * WheelANGSpeed * WallSPEEDK
 
-            '            TVX = BallVX
-            '            TVY = BallVY
 
             COLLISIONResponse BallVX, BallVY, _
                               wVX, wVY, rNX, rNY
 
-            '            BallX = BallX - TVX
-            '            BallY = BallY - TVY
-
-            Penetration = ((BallRadius + SlotThick) - rDIST)
+            Penetration = (MinDist - RetDIST)
             BallX = BallX + rNX * Penetration
             BallY = BallY + rNY * Penetration
 
@@ -711,7 +687,7 @@ Private Sub UPDATESTAT()
     Dim Max       As Long
     Dim MAXALL    As Long
 
-    fMain.Text2 = "Rounds:" & NSPINS & "  Frequencies   " & format$(100 / 38, "00.00") & vbCrLf & vbCrLf
+    fMain.Text2 = "Rounds:" & ROUNDS & "  Frequencies   " & format$(100 / 38, "00.00") & vbCrLf & vbCrLf
     fMain.Text3 = "Late Numbers:" & vbCrLf & vbCrLf
     For j = 1 To 38
         Max = -1000000000
@@ -723,7 +699,7 @@ Private Sub UPDATESTAT()
         Next
 
         'fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "    " & STATFreq(High) & "" & vbCrLf
-        fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "  " & format$(100 * STATFreq(High) / NSPINS, "00.000") & "%  (" & STATFreq(High) & ")" & vbCrLf
+        fMain.Text2 = fMain.Text2 & Slot2Number(High, True) & "  " & format$(100 * STATFreq(High) / ROUNDS, "00.000") & "%  (" & STATFreq(High) & ")" & vbCrLf
         STATFreq(High) = -STATFreq(High) - 1
     Next
     'RESTORE
@@ -734,34 +710,34 @@ Private Sub UPDATESTAT()
 
 
     For I = 0 To 37
-        If STATRita(I) > MAXALL Then MAXALL = STATRita(I)
+        If STATLate(I) > MAXALL Then MAXALL = STATLate(I)
     Next
 
     For j = 1 To 38
         Max = -1000000000
         For I = 0 To 37
-            If STATRita(I) > Max Then
+            If STATLate(I) > Max Then
                 High = I
-                Max = STATRita(I)
+                Max = STATLate(I)
             End If
         Next
 
-        fMain.Text3 = fMain.Text3 & Slot2Number(High, True) & "  " & format$(100 * STATRita(High) / MAXALL, "00.000") & "%  (" & STATRita(High) & ")" & vbCrLf
-        STATRita(High) = -STATRita(High) - 1
+        fMain.Text3 = fMain.Text3 & Slot2Number(High, True) & "  " & format$(100 * STATLate(High) / MAXALL, "00.000") & "%  (" & STATLate(High) & ")" & vbCrLf
+        STATLate(High) = -STATLate(High) - 1
     Next
 
 
     'RESTORE
     For I = 0 To 37
-        STATRita(I) = -STATRita(I) - 1
+        STATLate(I) = -STATLate(I) - 1
     Next
 
 
     '---- basic Histogram
     '    fMain.Cls
     '    For I = 0 To 37
-    '        fMain.Line (I * 12 + 12, fMain.ScaleHeight - 2)-(I * 12 + 12, -2 + fMain.ScaleHeight - 2300 * STATFreq(I) / NSPINS), vbBlack
-    '        fMain.Line (I * 12 + 15, fMain.ScaleHeight - 2)-(I * 12 + 15, -2 + fMain.ScaleHeight - 120 * STATRita(I) / MAXALL), vbGreen
+    '        fMain.Line (I * 12 + 12, fMain.ScaleHeight - 2)-(I * 12 + 12, -2 + fMain.ScaleHeight - 2300 * STATFreq(I) / ROUNDS), vbBlack
+    '        fMain.Line (I * 12 + 15, fMain.ScaleHeight - 2)-(I * 12 + 15, -2 + fMain.ScaleHeight - 120 * STATLate(I) / MAXALL), vbGreen
     '    Next
     '-------------
 
