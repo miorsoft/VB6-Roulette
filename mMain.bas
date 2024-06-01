@@ -527,7 +527,8 @@ Public Sub SIMULATE()
     '    WheelANGSpeed = WheelANGSpeed * 0.997
     WheelANGSpeed = WheelANGSpeed * 0.9974
 
-    If WheelANGSpeed > 0.000005 Then WheelANGSpeed = WheelANGSpeed - 0.000005
+'    If WheelANGSpeed > 0.000005 Then WheelANGSpeed = WheelANGSpeed - 0.000005
+    If WheelANGSpeed > 0.0000025 Then WheelANGSpeed = WheelANGSpeed - 0.0000025
 
     DistFromCenter = Sqr(BallX * BallX + BallY * BallY)
     invDFC = 1# / DistFromCenter
