@@ -278,7 +278,7 @@ Public Sub BET()
         DoEvents
 
         DRAWALL True
-        Sleep 20
+        Sleep 40
 
         If Timer > T + 9 Then Exit Do    '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     Loop While BetActive
@@ -454,7 +454,7 @@ Public Sub MANAGEBETS()
     fMain.txtWIN = "WIN: " & TotalWin & " (Total)" & vbCrLf & fMain.txtWIN
 
     fMain.txtWIN.Refresh
-    Sleep 1000
+   If (TURBO) Then Sleep 100 Else: Sleep 1000
 
 End Sub
 

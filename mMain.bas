@@ -69,9 +69,20 @@ Private Const WallSPEEDK As Double = 1
 
 Private SrfFlat   As cCairoSurface
 
+Public Function RndM(Optional ByVal Number As Long) As Double
+'https://www.vbforums.com/showthread.php?899623-Random-repeatable-numbers-that-do-NOT-depend-on-prior-values-for-the-next-result&p=5600596&viewfull=1#post5600596
+    Static Ri     As Double
 
+    If Number Then Ri = Number
+
+    Ri = Ri * (1.241 + (Ri > 983732.3)) + 1.737
+    RndM = Ri - Int(Ri)
+    
+End Function
 Public Sub SETUP(Optional andLAUNCH As Boolean = False)
-    Randomize Timer
+'    Randomize Timer
+    RndM Timer
+    
 
     Set WheelSRF = Cairo.ImageList.AddImage("WHEEL", App.Path & "\RouletteWheel.png")
     Set TableSRF = Cairo.ImageList.AddImage("TABLE", App.Path & "\AmericanTable.png")
@@ -207,16 +218,15 @@ End Sub
 
 Public Sub LAUNCH()
 
-    '    WheelANGSpeed = 0.25 + (Rnd * 2 - 1) * 0.07
-    WheelANGSpeed = 0.2 + (Rnd * 2 - 1) * 0.05
+    '    WheelANGSpeed = 0.25 + (rndm * 2 - 1) * 0.07
+    WheelANGSpeed = 0.2 + (RndM * 2 - 1) * 0.07 '0.05
 
 
-
-    BallX = (Rnd * 2 - 1) * 3
-    BallY = -(OuterRadius - BallRadius) + 4 + Rnd * 14
-    '    BallVX = Rnd * 8
-    '    BallVX = (Rnd * 2 - 1) * 8
-    BallVX = (Rnd * 3 - 2) * 8
+    BallX = (RndM * 2 - 1) * 5 '3
+    BallY = -(OuterRadius - BallRadius) + 4 + RndM * 14
+    '    BallVX = rndm * 8
+    '    BallVX = (rndm * 2 - 1) * 8
+    BallVX = (RndM * 3 - 2) * 8
 
     BallVY = 0
 
@@ -326,9 +336,6 @@ Private Sub ShowResult()
     End If
 
     MANAGEBETS
-
-
-
 
 
     LAUNCH
@@ -628,8 +635,8 @@ End Sub
 
 Private Sub COLLISIONResponse(VX1, VY1, VX2, VY2, nDX, nDY)
 
-    Const Elasticity As Double = 0.86    '0.7
-    Const Friction As Double = 0.975    '0.9
+    Const Elasticity As Double = 0.85 ' 0.86
+    Const Friction As Double = 0.98 ' 0.975    '0.9
 
     Const MassI   As Double = 1
     Const MassJ   As Double = 999
@@ -672,7 +679,7 @@ Private Sub COLLISIONResponse(VX1, VY1, VX2, VY2, nDX, nDY)
         DY = parIy - parJy
         Volume = -7000 + Log(1 + (DX * DX + DY * DY) ^ 0.125) * 8000
         If Volume > -0 Then Volume = -0
-        If Volume > -4250 Then SOUNDSPLAYER.PlaySound "Ball.MP3", , Volume
+        If Volume > -4000 Then SOUNDSPLAYER.PlaySound "Ball.MP3", , Volume
 
         'Debug.Print Volume
     End If

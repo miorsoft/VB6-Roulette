@@ -190,10 +190,10 @@ Friend Sub PlaySound(S As String, Optional Pan As Long = 0, Optional Volume As L
 
     Dim ST$
     For I = 0 To BUFFLEN
-        ST = ST & Left$(SoundsSET(I).FileName, 5) & "|"
+        ST = ST & Left$(SoundsSET(I).FileName, 4) & "|"
     Next
 Debug.Print ST
-Debug.Print Space$((index + 1) * 6 - 3) & "^"
+Debug.Print Space$((index + 1) * 5 - 3) & "^"
 
 
     If andSleep Then Sleep andSleep    '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

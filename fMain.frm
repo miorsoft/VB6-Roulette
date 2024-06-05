@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form fMain 
    BackColor       =   &H00007000&
    Caption         =   "ROULETTE Game  By MiorSoft (reexre)"
-   ClientHeight    =   12480
+   ClientHeight    =   12375
    ClientLeft      =   120
    ClientTop       =   465
    ClientWidth     =   21720
@@ -16,7 +16,7 @@ Begin VB.Form fMain
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   832
+   ScaleHeight     =   825
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1448
    StartUpPosition =   1  'CenterOwner
@@ -45,7 +45,7 @@ Begin VB.Form fMain
          BackColor       =   &H0000D000&
          Caption         =   "TURBO"
          BeginProperty Font 
-            Name            =   "DejaVu Sans Mono"
+            Name            =   "Consolas"
             Size            =   12
             Charset         =   0
             Weight          =   400
@@ -64,7 +64,7 @@ Begin VB.Form fMain
       Begin VB.ComboBox cmbSound 
          BackColor       =   &H0000A000&
          BeginProperty Font 
-            Name            =   "DejaVu Sans Mono"
+            Name            =   "Consolas"
             Size            =   12
             Charset         =   0
             Weight          =   400
@@ -83,8 +83,8 @@ Begin VB.Form fMain
       Begin VB.TextBox txtWIN 
          BackColor       =   &H0080CC80&
          BeginProperty Font 
-            Name            =   "DejaVu Sans Mono"
-            Size            =   9.75
+            Name            =   "Consolas"
+            Size            =   11.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -105,8 +105,8 @@ Begin VB.Form fMain
          BackColor       =   &H00008000&
          Caption         =   "Budget"
          BeginProperty Font 
-            Name            =   "DejaVu Sans Mono"
-            Size            =   12
+            Name            =   "Consolas"
+            Size            =   14.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -124,8 +124,8 @@ Begin VB.Form fMain
          BackColor       =   &H00008000&
          Caption         =   "-"
          BeginProperty Font 
-            Name            =   "DejaVu Sans Mono"
-            Size            =   12
+            Name            =   "Consolas"
+            Size            =   14.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -143,8 +143,8 @@ Begin VB.Form fMain
          BackColor       =   &H00008000&
          Caption         =   " Sound"
          BeginProperty Font 
-            Name            =   "DejaVu Sans Mono"
-            Size            =   12
+            Name            =   "Consolas"
+            Size            =   14.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -162,8 +162,8 @@ Begin VB.Form fMain
          BackColor       =   &H00008000&
          Caption         =   "Budget"
          BeginProperty Font 
-            Name            =   "DejaVu Sans Mono"
-            Size            =   12
+            Name            =   "Consolas"
+            Size            =   14.25
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -190,7 +190,7 @@ Begin VB.Form fMain
    Begin VB.TextBox Text3 
       BackColor       =   &H0080CC80&
       BeginProperty Font 
-         Name            =   "DejaVu Sans Mono"
+         Name            =   "Consolas"
          Size            =   9.75
          Charset         =   0
          Weight          =   400
@@ -211,7 +211,7 @@ Begin VB.Form fMain
    Begin VB.TextBox Text2 
       BackColor       =   &H0080CC80&
       BeginProperty Font 
-         Name            =   "DejaVu Sans Mono"
+         Name            =   "Consolas"
          Size            =   9.75
          Charset         =   0
          Weight          =   400
@@ -232,8 +232,8 @@ Begin VB.Form fMain
    Begin VB.TextBox Text1 
       BackColor       =   &H0080CC80&
       BeginProperty Font 
-         Name            =   "DejaVu Sans Mono"
-         Size            =   9.75
+         Name            =   "Consolas"
+         Size            =   11.25
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
@@ -247,7 +247,7 @@ Begin VB.Form fMain
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   0
-      Top             =   0
+      Top             =   120
       Width           =   4335
    End
 End
