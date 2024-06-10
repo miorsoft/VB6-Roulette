@@ -337,7 +337,7 @@ Public Sub DRAWBets()
 End Sub
 
 
-Private Sub HIlight(S As String)
+Public Sub HIlight(S As String, Optional Aplha As Double = 0.25)
     Dim N&
     Dim X#, Y#
 
@@ -347,7 +347,7 @@ Private Sub HIlight(S As String)
         X = TableScreenX + TableCellW * (2 + ((N - 1) \ 3))
         Y = TableScreenY + TableTopBorder + TableCellH * 2 - TableCellH * ((N - 1) Mod 3)
 
-        CC.SetSourceRGBA 1, 1, 0, 0.25
+        CC.SetSourceRGBA 1, 1, 0, Aplha
         CC.Rectangle X, Y, TableCellW, TableCellH
         CC.Fill
     Else
@@ -355,13 +355,13 @@ Private Sub HIlight(S As String)
         If N = 0 Then              ' ZERO
             X = TableScreenX + TableCellW * 1
             Y = TableScreenY + TableTopBorder + TableCellH * 1.5
-            CC.SetSourceRGBA 1, 1, 0, 0.25
+            CC.SetSourceRGBA 1, 1, 0, Aplha
             CC.Rectangle X, Y, TableCellW, TableCellH * 1.5
             CC.Fill
         Else                       '    -1    DOBLE ZERO
             X = TableScreenX + TableCellW * 1
             Y = TableScreenY + TableTopBorder
-            CC.SetSourceRGBA 1, 1, 0, 0.25
+            CC.SetSourceRGBA 1, 1, 0, Aplha
             CC.Rectangle X, Y, TableCellW, TableCellH * 1.5
             CC.Fill
         End If

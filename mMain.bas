@@ -41,6 +41,10 @@ Private Const PI2 As Double = 6.28318530717959
 Private Const PI  As Double = 3.14159265358979
 Public Const PIh  As Double = 1.5707963267949
 
+Private Const PI28 As Double = PI2 / 8
+Private Const InvPI2 As Double = 1 / 6.28318530717959
+
+
 'Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 Private SLOTN(0 To 37) As Long
@@ -68,6 +72,9 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Private Const WallSPEEDK As Double = 1
 
 Private SrfFlat   As cCairoSurface
+
+Public DoHighlightBALLPosition As Boolean
+
 
 Public Function RndM(Optional ByVal Number As Long) As Double
 'https://www.vbforums.com/showthread.php?899623-Random-repeatable-numbers-that-do-NOT-depend-on-prior-values-for-the-next-result&p=5600596&viewfull=1#post5600596
@@ -237,6 +244,8 @@ Public Sub LAUNCH()
 
     'If SoundMODE > 1 Then PlayMP3 App.Path & "\Sounds\Faites vos jeux.MP3"
     If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Faites vos jeux.MP3", 0, 0, 1000
+DoHighlightBALLPosition = False
+
     TotalBet = 0
     fMain.lBet = "Bet: 0"
     fMain.lWin = "WIN: 0"
@@ -248,6 +257,8 @@ Public Sub LAUNCH()
 
     'If SoundMODE > 1 Then PlayAsync App.Path & "\Sounds\Les Jeux sont faits.MP3"
     If SoundMODE > 1 Then SOUNDSPLAYER.PlaySound "Les Jeux sont faits.MP3"
+
+DoHighlightBALLPosition = True
 
 
     WHEELLOOP
@@ -304,8 +315,6 @@ Private Sub ShowResult()
         STATLate(I) = STATLate(I) + 1
     Next
     STATLate(N) = 0
-
-
 
     NumberExtracted = SLOTN(N)
 
@@ -398,6 +407,7 @@ Public Sub WHEELLOOP()
 
             Case tDRAW
                 DRAWALL
+                
                 DoEvents
 
             Case t1sec
@@ -414,6 +424,7 @@ Public Sub WHEELLOOP()
 End Sub
 
 Public Sub DRAWALL(Optional DoHighlight As Boolean)
+    Dim N         As Long
 
     '   CC.SetSourceColor vbWhite: CC.Paint
 
@@ -470,6 +481,12 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
     '''    CC.SetSourceColor 0
     '''    CC.Stroke
 
+    If DoHighlightBALLPosition Then
+        N = (-WheelANG + Atan2(BallX, BallY)) * InvPI2 * 38
+        While N < 0: N = N + 38: Wend
+        N = N Mod 38
+        HIlight CStr(SLOTN(N)), 0.33
+    End If
 
 
     fMain.Picture = SRF.Picture
@@ -526,6 +543,7 @@ Public Sub SIMULATE()
     Dim invDFC#
 
     Dim DX#, DY#
+    Dim A#
 
 
 
@@ -534,7 +552,7 @@ Public Sub SIMULATE()
     '    WheelANGSpeed = WheelANGSpeed * 0.997
     WheelANGSpeed = WheelANGSpeed * 0.9974
 
-'    If WheelANGSpeed > 0.000005 Then WheelANGSpeed = WheelANGSpeed - 0.000005
+    '    If WheelANGSpeed > 0.000005 Then WheelANGSpeed = WheelANGSpeed - 0.000005
     If WheelANGSpeed > 0.0000025 Then WheelANGSpeed = WheelANGSpeed - 0.0000025
 
     DistFromCenter = Sqr(BallX * BallX + BallY * BallY)
@@ -542,6 +560,7 @@ Public Sub SIMULATE()
 
     DX = BallX * invDFC
     DY = BallY * invDFC
+
 
     If DistFromCenter < 183 Then   ' CHECK CHELL SLOT
         CheckCOLLISIONwihtSLOTS
@@ -561,12 +580,30 @@ Public Sub SIMULATE()
         BallY = DY * DistFromCenter
     End If
 
+    '--------ROMBUS  deviation
+    If DistFromCenter > 267.5 Then
+        If DistFromCenter < 269.5 Then
+            A = Atan2(BallX, BallY)
+            While A < 0: A = A + PI2: Wend
+            A = (-WheelANG + A)
+            While A < 0#: A = A + PI2: Wend
+            While A > PI28: A = A - PI28: Wend
+            A = A + 0.006
+            If A > 0.29 And A < 0.49 Then
+                BallVY = BallVY + (RndM * 2 - 1) * (WheelANGSpeed + 0.01) * 20
+                BallVX = BallVX + (RndM * 2 - 1) * (WheelANGSpeed + 0.01) * 20
+            End If
+        End If
+    End If
+    '------------------
+
+
     '
     BallVX = BallVX - DY * DistFromCenter * WheelANGSpeed * 0.003    '0.003    ' Force induced by spinning wheel Floor
     BallVY = BallVY + DX * DistFromCenter * WheelANGSpeed * 0.003
 
-    BallVX = BallVX - DX * 0.05    ' 0.11    '0.15    '0.25    'Toward Center (Like CONE) [Wheel Slope]
-    BallVY = BallVY - DY * 0.05    ' 0.11    '0.15
+    BallVX = BallVX - DX * 0.055   '0.05    '    '0.15    '0.25    'Toward Center (Like CONE) [Wheel Slope]
+    BallVY = BallVY - DY * 0.055   '0.05    '    '0.15
 
     BallVX = BallVX * 0.997        '.995        'GLOABAL Friction
     BallVY = BallVY * 0.997
