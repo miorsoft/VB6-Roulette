@@ -277,8 +277,7 @@ Public Sub BET()
 
         DoEvents
 
-        DRAWALL True
-        Sleep 40
+        DRAWALL True, 40
 
         If Timer > T + 9 Then Exit Do    '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     Loop While BetActive
@@ -454,7 +453,7 @@ Public Sub MANAGEBETS()
     fMain.txtWIN = "WIN: " & TotalWin & " (Total)" & vbCrLf & fMain.txtWIN
 
     fMain.txtWIN.Refresh
-   If (TURBO) Then Sleep 100 Else: Sleep 1000
+   If (TURBO) Then New_c.SleepEx 100 Else: New_c.SleepEx 1000
 
 End Sub
 
@@ -491,8 +490,7 @@ Private Sub AnimateFichesOUT(X&, Y&)
         DX = DX * 1.9
         DY = DY * 1.9
 
-        DRAWALL
-        Sleep 20
+        DRAWALL , 20
 
         If FichesOUTY < -FicheRadius Then Exit For
         If FichesOUTX < -FicheRadius Then Exit For
@@ -541,8 +539,7 @@ Private Sub AnimateFichesIN(X&, Y&, Amount As Long)
             DY = DY * 0.8
         End If
 
-        DRAWALL
-        Sleep 20
+        DRAWALL , 20
 
         D = (XtoReach - FichesINX) * (XtoReach - FichesINX) + _
             (YtoReach - FichesINY) * (YtoReach - FichesINY)
@@ -555,8 +552,8 @@ Private Sub AnimateFichesIN(X&, Y&, Amount As Long)
 
     FichesPlacedAt(X, Y) = Amount
 
-    DRAWALL
-    Sleep 400
+    DRAWALL , 400
+    
     If TURBO Then ReDim FichesPlacedAt(30, 10)
 
 End Sub

@@ -66,9 +66,6 @@ Public SOUNDSPLAYER As cSounds
 
 Public NumberExtracted As Long
 
-Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-
-
 Private Const WallSPEEDK As Double = 1
 
 Private SrfFlat   As cCairoSurface
@@ -423,7 +420,7 @@ Public Sub WHEELLOOP()
 
 End Sub
 
-Public Sub DRAWALL(Optional DoHighlight As Boolean)
+Public Sub DRAWALL(Optional DoHighlight As Boolean, Optional SleepMS As Long)
     Dim N         As Long
 
     '   CC.SetSourceColor vbWhite: CC.Paint
@@ -492,6 +489,7 @@ Public Sub DRAWALL(Optional DoHighlight As Boolean)
     fMain.Picture = SRF.Picture
     '    SRF.DrawToDC fMain.hDC
     'fMain.Refresh
+If SleepMS Then New_c.SleepEx SleepMS
 
 End Sub
 
